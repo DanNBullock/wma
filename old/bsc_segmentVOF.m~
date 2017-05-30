@@ -17,8 +17,8 @@ if ~and(isstruct (L_arcuateFile), isstruct (R_arcuateFile))
     L_arcuate = fgRead(L_arcuateFile);
     R_arcuate = fgRead(R_arcuateFile);
 else
- L_arcuate = L_arcuateFile;  
- R_arcuate = R_arcuateFile;  
+ L_arcuate=L_arcuateFile;  
+ R_arcuate=R_arcuateFile;  
 end
 if ~isstruct (dtFile)
     dt = dtiLoadDt6(dtFile);

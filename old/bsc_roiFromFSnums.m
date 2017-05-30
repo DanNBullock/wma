@@ -1,4 +1,7 @@
-function [mergedROI] =bsc_roiFromFSnums(fsDir,fsROInums, smoothFlag, smoothKernel)
+function mergedROI = wma_roiFromFSnums(fsDir,fsROInums, smoothFlag, smoothKernel)
+%
+% Build a VISTASOFT ROI from a FreeSurfer segmentations and a series of
+% indeces to regions in the FreeSurfer segmentaion
 %
 %  INPUTS:
 %  -fsDir:  path to THIS SUBJECT'S freesurfer rectory.
@@ -14,22 +17,14 @@ function [mergedROI] =bsc_roiFromFSnums(fsDir,fsROInums, smoothFlag, smoothKerne
 %
 %  NOTE:  Makes a call to mri_convert, so requires that FreeSurfer be
 %  installed and set up properly.
-% % (C) Daniel Bullock 2017 Bloomington, Indiana
 %
-%% preliminaries
-
-%set smooth flag, default = off
-if notDefined('smoothFlag'), smoothFlag=false;end
-
-%set smooth kernel, default = 3; but not necssarily 3 mm due to voxel size
-%of aparcAsegFile nifti.
-if notDefined('smoothKernel'), smoothFlag=false;end
-
-%% set up aparcAsegFile
+% (C) Daniel Bullock 2017 Indiana University
 
 
-%set paths
-if length( num2str(fsROInums(1))) <5
+% set smooth flag, default = off
+if notDefined('smoothFlag'),   smoothFlag = false;end
+if notDefined('smoothKernel'), smoothFlag = false;end
+if length( num2str(fsROInums(1))) < 5
     niiPath=fullfile(fsDir,'/mri/','aparc+aseg.nii.gz');
     mgzfile='aparc+aseg.mgz';
 else
@@ -37,25 +32,21 @@ else
     mgzfile='aparc.a2009s+aseg.mgz';
 end
 
-% make the aparc aseg file if it doesnt exist
-if ~exist(niiPath)
-    %apaprently necessary for matlab?
+% Make the aparc aseg file if it does not exist
+if ~exist(niiPath,'file')
     spaceChar={' '};
-    [status result] = system(strcat('mri_convert',spaceChar, mgzfile ,spaceChar, niiPath));
+    [status, ~] = system(strcat('mri_convert',spaceChar, mgzfile ,spaceChar, niiPath));
     if status==0
-        fprintf('/n Error generating aseg nifti file.  There may be a problem finding the file.')
+        error('/n Error generating aseg nifti file.  There may be a problem finding the file.')
         keyboard
     end
 end
 
 % read in the appropriate aseg niftifile
-atlasNifti=niftiRead(niiPath);
+atlasNifti = niftiRead(niiPath);
 
-
-%% begin loop
-
-%get size of atlasNifti.data and make a blank matrix mask for it
-atlasDataSize=size(atlasNifti.data);
+% get size of atlasNifti.data and make a blank matrix mask for it
+atlasDataSize = size(atlasNifti.data);
 blankLabelNifti(1:atlasDataSize(1),1:atlasDataSize(2),1:atlasDataSize(3))=false;
 
 ROImask=blankLabelNifti;
@@ -69,10 +60,10 @@ for iRois = fsROInums
     end
 end
 
-%% converts nifti formatting to roi formatting
+% converts nifti formatting to roi formatting
 %smooth if you want to
 if smoothFlag
-ROImask=~(smooth3(ROImask,'box', smoothKernel))==0;
+   ROImask =~ ((smooth3(ROImask,'box', smoothKernel)) == 0 );
 end
 
 %get index coordinates from nifti mask volume
