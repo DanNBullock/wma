@@ -61,7 +61,7 @@ disp('Segmenting Major and Associative Tracts');
 [fg_classified,~,classification,~] = wma_majortracts(dti_file, wbFG);
 
 % Segment the Vertical Occipital Fasiculus (VOF)
-[~, ~, L_VOF_Indexes, R_VOF_Indexes] = bsc_segmentVOF(wbFG, fsDIR, FiberDir, dtiFile, fg_classified(19), fg_classified(20));
+[~, ~, L_VOF_Indexes, R_VOF_Indexes] = wma_segment_vof(wbFG, fsDIR, FiberDir, dtiFile, fg_classified(19), fg_classified(20), DAN);
 
 % posterior arcuate and temporo-parietal connection segmentation
 [~, ~, L_pArc_Indexes, L_TPC_Indexes ,~, ~, ...
