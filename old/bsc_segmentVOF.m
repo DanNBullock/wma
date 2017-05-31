@@ -1,6 +1,6 @@
 function [fgsegment_lmm_gradient, fgsegment_rmm_gradient, pass1L, pass1R, ....
           L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices, ...
-          L_pArc_vot, R_pArc_vot, L_pArc_vot_Indexes, R_pArc_vot_Indexes] = bsc_segmentVOF(fg, fsROIdir, outdir, dtFile, L_arcuateFile, R_arcuateFile)
+          L_pArc_vot, R_pArc_vot, L_pArc_vot_Indexes, R_pArc_vot_Indexes] = bsc_segmentVOF(fg, fsROIdir, outdir, dtFile, L_arcuateFile, R_arcuateFile,L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices)
 %
 % This script identify the VOF from whole-brain tractography using AFQ-VOF toolbox.
 %
@@ -28,7 +28,7 @@ end
 fprintf('Segmenting the VOF from Connectome ...\n')
 % Segment the VOF using AFQ-VOF extension
 [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes,  L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices, L_pArc_vot, R_pArc_vot, L_pArc_vot_Indexes, R_pArc_vot_Indexes] = ...
- wma_segment_vof(fg,L_arcuate,R_arcuate,fsROIdir,outdir, [],[],dt);
+ wma_segment_vof(fg,L_arcuate,R_arcuate,fsROIdir,outdir, [],[],dt,0, [], [], L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices);
 
 
 % Exclude streamlines with outlier gradient
