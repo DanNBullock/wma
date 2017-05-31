@@ -58,14 +58,13 @@ if notDefined('nosave'), nosave=false;end
 disp('Segmenting Major and Associative Tracts');
 
 % posterior arcuate and temporo-parietal connection segmentation
-[~, ~, L_pArc_Indexes, L_TPC_Indexes ,~, ~, ...
-       R_pArc_Indexes, R_TPC_Indexes] = bsc_automated_roi_segment_script_neo(wbFG,fsDIR);
+[L_pArc, ~, L_pArc_Indexes,L_TPC_Indexes ,R_pArc, ~, R_pArc_Indexes,R_TPC_Indexes] = bsc_automated_roi_segment_script_neo(wbFG,fsDIR);
 
 % Segment the major white matter tracts in the Mori Atlas
 [fg_classified,~,classification,~] = wma_majortracts(dti_file, wbFG);
 
 % Segment the Vertical Occipital Fasiculus (VOF)
-[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  bsc_segmentVOF(wbFG, fsDIR, FiberDir, dtiFile, fg_classified(19), fg_classified(20), L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices);
+[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  bsc_segmentVOF(wbFG, fsDIR, FiberDir, dtiFile, fg_classified(19), fg_classified(20), L_pArc, R_pArc, L_pArc_Indexes, R_pArc_Indexes);
 
 % Middle Longitudinal Fasiculus segmentation
 [~, RightMdLFindexes, ...
