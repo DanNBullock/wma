@@ -113,7 +113,7 @@ function [fg_classified,fg_unclassified,classification,fg] = wma_majortracts(dt6
 % 
 % Modified by Franco Pestilli Indiana University 2017
 
-%% Initialize SPM defualt parameters for normalization
+%% Initialize SPM defualt parameters for normalization 
 spm_get_defaults; global defaults; 
 defaults.normalise.estimate.smosrc  = 8;
 defaults.normalise.estimate.smoref  = 0;
@@ -124,7 +124,7 @@ defaults.normalise.estimate.nits    = 16;
 defaults.normalise.estimate.reg     = 1;
 params = defaults.normalise.estimate;
 
-%% Check arguments
+%% Check arguments 
 if ~exist('useInterhemisphericSplit', 'var') || isempty(useInterhemisphericSplit)
     useInterhemisphericSplit = false;
 end
