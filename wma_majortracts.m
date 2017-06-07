@@ -468,6 +468,3 @@ for ii = 1:size(moriRois, 1)
 end
 
 return;
-
-
-
