@@ -1,4 +1,4 @@
-function [classification] = wma_wrapper(wbFG,dt6,FiberDir,saveHeader,fsDIR, nosave)
+function [classification] = wma_wrapper(wbFG,dt6,FiberDir,fsDIR, nosave)
 % 
 % [tracts_indexes]=wma_wrapper(wbFG,dt6path,FiberDir,saveHeader)
 %
@@ -16,12 +16,13 @@ function [classification] = wma_wrapper(wbFG,dt6,FiberDir,saveHeader,fsDIR, nosa
 % -FiberDir: directory path for the directory you would like your fiber 
 % indexes saved down to.
 %
-% -saveHeader: a string corresponding to whatever iformation you would like
-% to serve as the file identifier for the tracts_indexes object.  Could
-% include information like tractography parameter settings, subject
-% identifier or group ID.  (example: 'HCP_105115_PROB_Lmax2_conn5')
-%
 % -fsDIR: path  to THIS SUBJECT'S freesurfer directory
+%
+% -saveHeader: a string corresponding to whatever iformation you would like
+% to serve as the file identifier for the FiberIndexes object.  Could
+% include information like tractography parameter settings, subject
+% identifier or group ID.  (example: 'HCP_105115_PROB_Lmax2_conn5').  If
+% not defined, adds nothing to output file name.
 %
 % -nosave=flag for whether or not to save the output.  Defaults action is
 % to save
@@ -69,6 +70,9 @@ end
 
 % Sets default saving behavior.  Defaults to saving.
 if notDefined('nosave'), nosave=false;end
+
+if notDefined('saveHeader'), saveHeader=[];end
+
 
 %% Segmentation
 
