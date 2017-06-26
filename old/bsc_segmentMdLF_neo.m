@@ -31,9 +31,9 @@ if ~exist(strcat(fsDir,'/mri/aparc.a2009s+aseg.nii.gz'))
     %apaprently necessary for matlab?
     spaceChar={' '};
     [status result] = system(strcat('mri_convert',spaceChar,fsDir,'/mri/aparc.a2009s+aseg.mgz',spaceChar, fsDir, '/mri/aparc.a2009s+aseg.nii.gz'));
-    if status==0
-        fprintf('/n Error generating aseg nifti file.  There may be a problem finding the aparc.a2009s+aseg file.')
-        keyboard
+    if status~=0
+        error('/n Error generating aseg nifti file.  There may be a problem finding the aparc.a2009s+aseg file.')
+        
     end
 end
 
@@ -51,8 +51,6 @@ for leftright= [1,2]
     %hemispheres of the brain in accordance with freesurfer's ROI
     %numbering scheme. left = 1, right = 2
     sidenum=10000+leftright*1000;
-    
-
     
     %% occipito-parietal roi
     %generates the roi for the occipito-parietal regions corresponding to
@@ -95,7 +93,7 @@ for leftright= [1,2]
     if leftright==2
         sideflag='R';
     else
-        sideflag='L'
+        sideflag='L';
     end
     currentFascicleName=strcat(sideflag,'_MdLF');
     
@@ -107,17 +105,6 @@ for leftright= [1,2]
     
     %obtain fiber indexes corresponding to MdLF
     FiberIndexes=find(FiberBoolVec);
-    
-    %optional cleaning step.  Left out for now
-    if ~isempty(fascicle.fibers)
-        %optional cleaning, left out here
-        %         [~, keep] = mbaComputeFibersOutliers(fascicle,3,3);
-        %         fprintf('\n[%s] Found a tract with %i fibers... \n',mfilename,sum(keep))
-        %         fprintf(' %s \n', currentFascicleName);
-        %         fascicle = fgExtract(fascicle,find(keep),'keep');
-    else
-        fprintf('No fibers found for %s \n', currentFascicleName);
-    end
     
     %directs segmentation output to correct function output holder
     if leftright == 2
