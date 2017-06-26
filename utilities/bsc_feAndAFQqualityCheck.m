@@ -79,6 +79,8 @@ for istreamlines=1:length(wbFG.fibers)
     wbFG_streamLengths(istreamlines)=sum(sqrt(sum(diff(wbFG.fibers{istreamlines},1,2).^2)));
 end
 
+results.LiFEstats.fe_name=fe.name;
+
 % Computes the average and standard deviation of the voxelwise error. See
 % feGet: 'voxrmses0norm' for more information.
 % Concern: does this include non tractography occupied voxels?
