@@ -19,11 +19,20 @@ function mergedROI = wma_roiFromFSnums(fsDir,fsROInums, smoothFlag, smoothKernel
 %  installed and set up properly.
 %
 % (C) Daniel Bullock 2017 Indiana University
-
+%% preliminaries
 
 % set smooth flag, default = off
 if notDefined('smoothFlag'),   smoothFlag = false;end
+
+%set smooth kernel, default = 3; but not necssarily 3 mm due to voxel size
+%of aparcAsegFile nifti.
 if notDefined('smoothKernel'), smoothFlag = false;end
+%% set up aparcAsegFile
+% Function uses aparcAseg file rather than a number of separated files.
+% Here we check to make sure that they exist and create them if not.
+
+% If the length  of the ID is less than 5 then it is safe to assume that the origional
+% segmentation is being used.
 if length( num2str(fsROInums(1))) < 5
     niiPath=fullfile(fsDir,'/mri/','aparc+aseg.nii.gz');
     mgzfile='aparc+aseg.mgz';
@@ -35,12 +44,15 @@ end
 % Make the aparc aseg file if it does not exist
 if ~exist(niiPath,'file')
     spaceChar={' '};
-    [status, ~] = system(strcat('mri_convert',spaceChar, mgzfile ,spaceChar, niiPath));
-    if status==0
+    quoteString=strcat('mri_convert',spaceChar, fsDir,'/mri/',mgzfile ,spaceChar, niiPath);
+    quoteString=quoteString{:};
+    [status result] = system(quoteString);
+    if status~=0
         error('/n Error generating aseg nifti file.  There may be a problem finding the file.')
-        keyboard
     end
 end
+
+%% iteratively use aparc atlas to make combined ROI
 
 % read in the appropriate aseg niftifile
 atlasNifti = niftiRead(niiPath);
