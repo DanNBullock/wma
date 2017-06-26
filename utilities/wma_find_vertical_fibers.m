@@ -178,16 +178,4 @@ end
 L_vertical_fascicles_identities = L_vertical_fascicles_identities( (L_vertical_fascicles_identities~=0) );
 R_vertical_fascicles_identities = R_vertical_fascicles_identities( (R_vertical_fascicles_identities~=0) );
 
-%% Save fibers
-if length(L_fg_vert.fibers) > 10
-    dtiWriteFiberGroup(L_fg_vert,fullfile(outdir,'Left_VerticalFG')); L = 1;
-else
-    L = 0;
-end
-if length(R_fg_vert.fibers) > 10
-    dtiWriteFiberGroup(R_fg_vert,fullfile(outdir,'Right_VerticalFG')); R = 1;
-else
-    R = 0;
-end
-
 return
