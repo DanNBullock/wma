@@ -1,4 +1,4 @@
-function [tracts_indexes] = wma_wrapper(wbFG,dti_file,FiberDir,saveHeader,fsDIR, nosave)
+function [tracts_indexes] = wma_wrapper(wbFG,dt6,FiberDir,saveHeader,fsDIR, nosave)
 % 
 % [tracts_indexes]=wma_wrapper(wbFG,dt6path,FiberDir,saveHeader)
 %
@@ -11,7 +11,7 @@ function [tracts_indexes] = wma_wrapper(wbFG,dti_file,FiberDir,saveHeader,fsDIR,
 % structure or an fe path it will (probably) extract the fg from it.
 % appropriately.
 %
-% -dt6path: either a path to a saved dt6 file or a dt6 object
+% -dt6: either a path to a saved dt6 file or a dt6 object
 %
 % -FiberDir: directory path for the directory you would like your fiber 
 % indexes saved down to.
@@ -41,6 +41,8 @@ function [tracts_indexes] = wma_wrapper(wbFG,dti_file,FiberDir,saveHeader,fsDIR,
 %
 % (C) Daniel Bullock, 2017, Indiana University
 
+%% Path generation and initialization
+
 % loads file if a string was passed 
 if ischar(wbFG)
     wbFG = load(wbFG);
@@ -52,8 +54,16 @@ if isfield(wbFG, 'fg')
     wbFG = feGet(wbFG, 'fibers acpc');
 end
 
+if ischar(dt6)
+    dt6 = dtiLoadDt6(dt6);
+else
+    dti6=dt6;
+end
+
 % Sets default saving behavior.  Defaults to saving.
 if notDefined('nosave'), nosave=false;end
+
+%% Segmentation
 
 disp('Segmenting Major and Associative Tracts');
 
@@ -106,8 +116,16 @@ tracts_indexes.R_MdLF=RightMdLFindexes;
 tracts_indexes.L_MdLF=LeftMdLFindexes;
 
 if ~nosave
-   save (strcat(fullfile(FiberDir),saveHeader,'_FiberIndexes.mat'), ...
-        'tracts_indexes','-v7.3');
+    %runs outlier removal with the given parameters
+    FiberIndexes= removeOutliersBSC(FiberIndexes,wbFG, 4, 4);
+    
+    %saves down indexes after
+    save (strcat(fullfile(FiberDir),saveHeader,'_FiberIndexes.mat'),'FiberIndexes','-v7.3');
+    
+    %creates a classification structure that is compatable with AFQ
+    classification = bsc_convertBSCtoAFQ (FiberIndexes, wbFG);
+    
+    save (strcat(fullfile(FiberDir),saveHeader,'classification.mat'),'classification','-v7.3');
 end
 
 fprintf(' \n Fiber Indexes saved \n');
