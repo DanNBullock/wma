@@ -81,7 +81,7 @@ classification.index(L_TPC_Indexes)=25;
 classification.index(R_TPC_Indexes)=26;
 
 % Segment the Vertical Occipital Fasiculus (VOF)
-[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  bsc_segmentVOF(wbFG, fsDIR, FiberDir, dtiFile, fg_classified(19), fg_classified(20), L_pArc, R_pArc, L_pArc_Indexes, R_pArc_Indexes);
+[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  bsc_segmentVOF(wbFG, fsDIR, classification, dtiFile) 
 
 classification.index(L_VOF_Indexes)=21;
 classification.index(R_VOF_Indexes)=22;
