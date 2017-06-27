@@ -57,15 +57,10 @@ else
     end
 end
 
-%if it is a fe structure, get the wbFG out of it
-if isfield(wbFG, 'fg')
-    wbFG = feGet(wbFG, 'fibers acpc');
-end
-
 if ischar(dt6)
     dt6 = dtiLoadDt6(dt6);
 else
-    dti6=dt6;
+
 end
 
 % Sets default saving behavior.  Defaults to saving.
@@ -73,14 +68,13 @@ if notDefined('nosave'), nosave=false;end
 
 if notDefined('saveHeader'), saveHeader=[];end
 
-
 %% Segmentation
 
 disp('Segmenting Major and Associative Tracts');
 
 % Segment the major white matter tracts in the Mori Atlas
 tic
-[fg_classified,~,classification,~] = wma_majortracts(dti_file, wbFG);
+[fg_classified,~,classification,~] = wma_majortracts(dt6, wbFG);
 toc=segmentTime;
 fprintf ('\n Mori Atlas segmentation run complete in %4.2f hours \n', segmentTime/(60*60))
 
