@@ -25,7 +25,7 @@ if ischar(fe)
     %if it is a fe structure, get the wbFG out of it
 end
 
-[classification]=bsc_AFQseg_and_bloomtracks_v2(fe,dt6,fsDIR);
+[classification]=wma_wrapper(fe,dt6,fsDIR);
 
 
 [tractStats] = wma_multiTractAnalysis(classification,fe,dt6);
