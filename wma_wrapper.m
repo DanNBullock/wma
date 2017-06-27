@@ -1,4 +1,4 @@
-function [classification] = wma_wrapper(wbFG,dt6,FiberDir,fsDIR, nosave)
+function [classification] = wma_wrapper(wbFG,dt6,fsDIR)
 % 
 % [tracts_indexes]=wma_wrapper(wbFG,dt6path,FiberDir,saveHeader)
 %
@@ -13,22 +13,10 @@ function [classification] = wma_wrapper(wbFG,dt6,FiberDir,fsDIR, nosave)
 %
 % -dt6: either a path to a saved dt6 file or a dt6 object
 %
-% -FiberDir: directory path for the directory you would like your fiber 
-% indexes saved down to.
-%
 % -fsDIR: path  to THIS SUBJECT'S freesurfer directory
 %
-% -saveHeader: a string corresponding to whatever iformation you would like
-% to serve as the file identifier for the FiberIndexes object.  Could
-% include information like tractography parameter settings, subject
-% identifier or group ID.  (example: 'HCP_105115_PROB_Lmax2_conn5').  If
-% not defined, adds nothing to output file name.
-%
-% -nosave=flag for whether or not to save the output.  Defaults action is
-% to save
-%
 % OUTPUTS:
-% -tracts_indexes:  A structure whose field names correspond to the names
+% -classification:  A structure whose field names correspond to the names
 %  of the various fiber tracts that were segmented in this function.  Each
 %  field stores the indexes into the wbFG corresponding to the named track.
 %  i.e. tracts_indexes.R_pArc will correspond to several hundered (probably)
@@ -111,11 +99,5 @@ for itracts=1:length(classification.names)
 end
 
 disp('Tracts segmentation complete');
-
-if ~nosave
-    
-    save (strcat(fullfile(FiberDir),saveHeader,'classification.mat'),'classification','-v7.3');
-    fprintf(' \n classification saved \n')
-end
 
 return
