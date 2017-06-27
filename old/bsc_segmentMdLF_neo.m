@@ -24,26 +24,6 @@ function [RightMdLF, RightMdLFindexes, LeftMdLF, LeftMdLFindexes] =bsc_segmentMd
 %the smoothing kernel used for the parietal and temporal ROIs
 smoothParameter=5;
 
-%this version relies on the aparc.a2009s+aseg file.  Here we make a
-%nii.gz version of one doesn't already exist.  keyboards out if there's
-%an error doing this
-if ~exist(strcat(fsDir,'/mri/aparc.a2009s+aseg.nii.gz'))
-    %apaprently necessary for matlab?
-    spaceChar={' '};
-    [status result] = system(strcat('mri_convert',spaceChar,fsDir,'/mri/aparc.a2009s+aseg.mgz',spaceChar, fsDir, '/mri/aparc.a2009s+aseg.nii.gz'));
-    if status~=0
-        error('/n Error generating aseg nifti file.  There may be a problem finding the aparc.a2009s+aseg file.')
-        
-    end
-end
-
-%reads in label data
-labelNifti=niftiRead(strcat(fsDir, '/mri/aparc.a2009s+aseg.nii.gz'));
-%generates a blank boolean array that corresponds to the dimensions of
-%the fs aparc + aseg nifti data.
-sizeLabelNifti=size(labelNifti.data);
-blankLabelNifti(1:sizeLabelNifti(1),1:sizeLabelNifti(2),1:sizeLabelNifti(3))=false;
-
 %iterates through left and right sides
 for leftright= [1,2]
     
