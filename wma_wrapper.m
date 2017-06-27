@@ -111,6 +111,11 @@ classification(R_VOF_Indexes)=22;
 classification(LeftMdLFindexes)=27;
 classification(RightMdLFindexes)=28;
 
+for itracts=1:length(classification.names)
+    spaceIndices=strfind(classification.names{itracts},' ');
+    classification.names{itracts}(spaceIndices)='_';
+end
+
 disp('Tracts segmentation complete');
 
 if ~nosave
