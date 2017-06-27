@@ -1,5 +1,5 @@
 function [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes] = ...
-       wma_segment_vof(wholebrainfgPath, fsROIdir,classsification,thresh,v_crit, dt, arcThresh, parcThresh)
+       wma_segment_vof(wholebrainfgPath, fsROIdir,classsification, dt, thresh,v_crit, arcThresh, parcThresh)
 % Segment the VOF from a wholebrain connectome
 %
 % [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes] = wma_segment_vof(wholebrainfgPath,,fsROIdir,thresh,v_crit, dt, arcThresh, parcThresh)
