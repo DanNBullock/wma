@@ -93,23 +93,23 @@ end
 % posterior arcuate and temporo-parietal connection segmentation
 [L_pArc, ~, L_pArc_Indexes,L_TPC_Indexes ,R_pArc, ~, R_pArc_Indexes,R_TPC_Indexes] = bsc_automated_roi_segment_script_neo(wbFG,fsDIR);
 
-classification(L_pArc_Indexes)=23;
-classification(R_pArc_Indexes)=24;
-classification(L_TPC_Indexes)=25;
-classification(R_TPC_Indexes)=26;
+classification.index(L_pArc_Indexes)=23;
+classification.index(R_pArc_Indexes)=24;
+classification.index(L_TPC_Indexes)=25;
+classification.index(R_TPC_Indexes)=26;
 
 % Segment the Vertical Occipital Fasiculus (VOF)
 [~, ~, L_VOF_Indexes, R_VOF_Indexes] =  bsc_segmentVOF(wbFG, fsDIR, FiberDir, dtiFile, fg_classified(19), fg_classified(20), L_pArc, R_pArc, L_pArc_Indexes, R_pArc_Indexes);
 
-classification(L_VOF_Indexes)=21;
-classification(R_VOF_Indexes)=22;
+classification.index(L_VOF_Indexes)=21;
+classification.index(R_VOF_Indexes)=22;
 
 % Middle Longitudinal Fasiculus segmentation
 [~, RightMdLFindexes, ...
  ~, LeftMdLFindexes] = bsc_segmentMdLF_neo(wbFG, fsDIR);
  
-classification(LeftMdLFindexes)=27;
-classification(RightMdLFindexes)=28;
+classification.index(LeftMdLFindexes)=27;
+classification.index(RightMdLFindexes)=28;
 
 for itracts=1:length(classification.names)
     spaceIndices=strfind(classification.names{itracts},' ');
