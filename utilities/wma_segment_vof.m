@@ -2,7 +2,7 @@ function [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes,  L_pArc, R_pArc, L_pArc_fi
        wma_segment_vof(wholebrainfgPath,L_arcuate,R_arcuate,fsROIdir,thresh,v_crit, dt, arcThresh, parcThresh, L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices)
 % Segment the VOF from a wholebrain connectome
 %
-% [L_VOF, R_VOF, L_pArc, R_pArc, L_pArc_vot, R_pArc_vot, fiberIndices] = AFQ_FindVOF(wholebrainfgPath,L_arcuate,R_arcuate,fsROIdir,thresh,v_crit, dt, arcThresh, parcThresh)
+% [L_VOF, R_VOF, L_pArc, R_pArc, L_pArc_vot, R_pArc_vot, fiberIndices] = wma_segment_vof(wholebrainfgPath,L_arcuate,R_arcuate,fsROIdir,thresh,v_crit, dt, arcThresh, parcThresh, L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices)
 %
 % This function will take in a wholebrain connectome, a segmented arcuate
 % fasciculus and a freesurfer segmentation and return the vertical
@@ -43,7 +43,9 @@ function [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes,  L_pArc, R_pArc, L_pArc_fi
 % Copyright Jason D. Yeatman, September 2014. Code released with:
 % Yeatman J.D., Weiner K.S., Pestilli F., Rokem A., Mezer A., Wandell B.A.
 % (2014). The vertical occipital fasciculus: A forgotten highway. PNAS.
-
+%
+%  Edited by Franco Pestilli and Daniel Bullock, 2017
+%
 %% Argument checking and parameter setting
 % Path to ROIs
 
