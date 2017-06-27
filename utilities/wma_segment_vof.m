@@ -1,8 +1,8 @@
 function [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes,  L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices, L_pArc_vot, R_pArc_vot, L_pArc_vot_Indexes, R_pArc_vot_Indexes] = ...
-       wma_segment_vof(wholebrainfgPath,L_arcuate,R_arcuate,fsROIdir,outdir,thresh,v_crit, dt, savefiles, arcThresh, parcThresh, L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices)
+       wma_segment_vof(wholebrainfgPath,L_arcuate,R_arcuate,fsROIdir,thresh,v_crit, dt, arcThresh, parcThresh, L_pArc, R_pArc, L_pArc_fibersIndices, R_pArc_fibersIndices)
 % Segment the VOF from a wholebrain connectome
 %
-% [L_VOF, R_VOF, L_pArc, R_pArc, L_pArc_vot, R_pArc_vot, fiberIndices] = AFQ_FindVOF(wholebrainfgPath,L_arcuate,R_arcuate,fsROIdir,outdir,thresh,v_crit, dt, savefiles, arcThresh, parcThresh)
+% [L_VOF, R_VOF, L_pArc, R_pArc, L_pArc_vot, R_pArc_vot, fiberIndices] = AFQ_FindVOF(wholebrainfgPath,L_arcuate,R_arcuate,fsROIdir,thresh,v_crit, dt, arcThresh, parcThresh)
 %
 % This function will take in a wholebrain connectome, a segmented arcuate
 % fasciculus and a freesurfer segmentation and return the vertical
@@ -21,7 +21,6 @@ function [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes,  L_pArc, R_pArc, L_pArc_fi
 %                    Next use the function:
 %                    fs_roisFromAllLabels(fsIn,outDir,type,refT1)
 %                    to convert the freesurfer segmentation into ,mat ROIs
-% outdir           - This is where all the outputs will be saved
 % thresh           - A fiber must travel vertical for a large proportion of
 %                    its length. The default values are likely fine
 % vcrit            - To find fibers that we can considder vertical, we must
@@ -31,8 +30,6 @@ function [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes,  L_pArc, R_pArc, L_pArc_fi
 %                    compare to other directions (e.g., longitudinal) to be
 %                    a candidate for the VOF. The default is 1.3
 % dt               - dt6.mat structure or path to the dt6.mat file.
-% savefiles        - Logical indicating whether VOF fiber groups should be
-%                    saved
 %
 % Outputs
 % L_VOF, R_VOF     - Left and right hemisphere VOF fiber groups
@@ -49,13 +46,7 @@ function [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes,  L_pArc, R_pArc, L_pArc_fi
 
 %% Argument checking and parameter setting
 % Path to ROIs
-if notDefined('fsROIdir')
-    fsROIdir = uigetdir([],'Select an ROI directory');
-end
-% output directory
-if notDefined('outdir')
-    outdir = uigetdir([],'Select an output directory');
-end
+
 % Remove any fiber that doesn't go vertical (positive z) for thresh% of its
 % coordinates
 if notDefined('thresh')
@@ -65,10 +56,7 @@ end
 if notDefined('v_crit')
     v_crit = 1.3;
 end
-% Default is to save fibers
-if notDefined('savefiles')
-    savefiles = true;
-end
+
 % Default is to define VOF as fibers that have fewer than 20 nodes of
 % overlap with the arcuate
 if notDefined('arcThresh')
@@ -169,11 +157,6 @@ if ~isempty(R_fg_vert.fibers)
         R_VOF_Indexes      = R_VOF_Indexes(R_VOF_keep);
     end
     
-    % Clean into a bundle
-    %[R_VOF, R_VOF_keep]   = AFQ_removeFiberOutliers(R_VOF,4,100,25);
-    %R_VOF_Indexes         = R_VOF_Indexes(R_VOF_keep);
-    %[R_pArc, R_pArc_keep] = AFQ_removeFiberOutliers(R_pArc,4,100,25);
-    %R_pArc_fibersIndices  = R_pArc_fibersIndices(R_pArc_keep);
 else
     R_VOF=[];
     R_pArc_vot=[];
