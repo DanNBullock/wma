@@ -63,7 +63,7 @@ disp('Segmenting Major and Associative Tracts');
 % Segment the major white matter tracts in the Mori Atlas
 tic
 [fg_classified,~,classification,~] = wma_majortracts(dt6, wbFG);
-toc=segmentTime;
+segmentTime=toc;
 fprintf ('\n Mori Atlas segmentation run complete in %4.2f hours \n', segmentTime/(60*60))
 
 % update name field
@@ -81,7 +81,7 @@ classification.index(L_TPC_Indexes)=25;
 classification.index(R_TPC_Indexes)=26;
 
 % Segment the Vertical Occipital Fasiculus (VOF)
-[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  bsc_segmentVOF(wbFG, fsDIR, classification, dtiFile) 
+[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  wma_segment_vof(wbFG, fsDIR, classification, dtiFile) 
 
 classification.index(L_VOF_Indexes)=21;
 classification.index(R_VOF_Indexes)=22;
