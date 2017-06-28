@@ -1,4 +1,4 @@
-function [results, classification]= wma_segmentAndAnalyze(fe,dt6,fsDIR)
+function [results, classificationRAW]= wma_segmentAndAnalyze(fe,dt6,fsDIR)
 %
 % [results, classification]= wma_segmentAndAnalyze(fe,dt6,fsDIR)
 %
@@ -25,16 +25,17 @@ if ischar(fe)
     %if it is a fe structure, get the wbFG out of it
 end
 
-[classification]=wma_wrapper(fe,dt6,fsDIR);
+[classificationRAW]=bsc_AFQseg_and_bloomtracks_v2(fe,dt6,fsDIR);
 
+% only pruning the origional afq tracts
+classificationCut= removeOutliersClassification(classificationRAW,fe, 4, 4, 1:20);
 
-[tractStats] = wma_multiTractAnalysis(classification,fe,dt6);
+[tractStats] = wma_multiTractAnalysis(classificationCut,fe,dt6);
 
-
-[~, results]= bsc_feAndAFQqualityCheck(fe, classification);
+[~, results]= bsc_feAndAFQqualityCheck(fe, classificationCut);
 
 results.AFQstats.tractStats=tractStats;
-results.AFQstats.classification=classification;
+results.AFQstats.classification=classificationCut;
 
 end
 
