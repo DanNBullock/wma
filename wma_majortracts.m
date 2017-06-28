@@ -162,8 +162,14 @@ tdir = fullfile(fileparts(which('mrDiffusion.m')), 'templates');
 
 %% Read the data
 % Load the dt6 file from disk
-dt      = dtiLoadDt6(dt6_file);
-baseDir = fileparts(dt6_file); 
+if ischar(dt6File)
+    dt = dtiLoadDt6(dt6File);
+    baseDir = fileparts(dt6File); 
+else
+    dt = dt6File;
+    baseDir = fileparts(dt.dataFile);
+    dt6File = dt.dataFile;
+end
 
 %% Spatially normalize diffusion data with the MNI (ICBM) template
 %
