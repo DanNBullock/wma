@@ -1,5 +1,5 @@
-function[figHandle, results]= bsc_feAndAFQqualityCheck(fe, afq_classificiation, saveDir)
-%function[figHandle, results]= bsc_feAndAFQqualityCheck(fe, afq_classificiation, saveDir)
+function[figHandle, results]= bsc_feAndAFQqualityCheck(fe, classification, saveDir)
+%function[figHandle, results]= bsc_feAndAFQqualityCheck(fe, classification, saveDir)
 %
 % This function computes a number of statistics for an input fe structure,
 % and, if included, an afq segmentation.  if you include a saveDir variable
@@ -13,8 +13,13 @@ function[figHandle, results]= bsc_feAndAFQqualityCheck(fe, afq_classificiation, 
 % INPUTS:
 % -fe:  either a path to an fe structure, or an fe structure itself.
 %
-% -afq_classificiation: either the classification structure from AFQ output
-%       or a path to the saved .mat object from AFQ.
+% -classification: Either the path to structure or the structure itself.
+%  The strucure has a field "names" with (N) names of the tracts classified
+%  while the field "indexes" has a j long vector (where  j = the nubmer of
+%  streamlines in wbFG (i.e. length(wbFG.fibers)).  This j long vector has
+%  a 0 for to indicate a streamline has gone unclassified, or a number 1:N
+%  indicatate that the streamline has been classified as a member of tract
+%  (N).
 %
 % -saveDir: path that you would like the results struture and plot saved
 %       to.  If not defined, does not save the output.
@@ -32,12 +37,11 @@ function[figHandle, results]= bsc_feAndAFQqualityCheck(fe, afq_classificiation, 
 %% preliminaries
 
 % loads AFQ classification file if it is a path
-if ~notDefined('afq_classificiation')
-    if ischar(afq_classificiation)
-        load(afq_classificiation)
+if ~notDefined('classification')
+    if ischar(classification)
+        load(classification)
         %catches classification if it was saved.  Can probably be made more
         %robust to other saving schemas
-        afq_classificiation=classification;
     end
 end
 
@@ -55,7 +59,7 @@ wbFG=feGet(fe,'fibers acpc');
 % gets positively weighted streamlines and their indexes
 posIndexes=find(fe.life.fit.weights>0);
 
-%a test for the 
+%a test for nans in weight values
 if isempty(find(isnan(fe.life.fit.weights),1))>0
     nanNum=length(find(isnan(fe.life.fit.weights)));
     fprintf('\n %i NaN values detected in fe.life.fit.weights', nanNum)
@@ -159,6 +163,9 @@ if ~notDefined('afq_classificiation')
         results.AFQstats.validated.classified_stream_length_stdev=std(wbFG_streamLengths(AFQIndexVec));
         
     elseif length(afq_classificiation.index)==results.LiFEstats.WBFG.stream_count
+    
+        life2afqFlag=false;
+    
         % If the number of items in the AFQ classification structure is NOT
         % equal to the number of positively weighted fibers in the WBFG we
         % assume that AFQ was run independent of LiFE
@@ -184,7 +191,7 @@ if ~notDefined('afq_classificiation')
         % Compute mean and standard deviation of validated and AFQ classified
         % streamlines in the WBFG
         results.AFQstats.validated.classified_stream_avg_length=mean(wbFG_streamLengths(survivorVec));
-        results.AFQstats.validated.classified_stream_length_stdev=mean(wbFG_streamLengths(survivorVec));
+        results.AFQstats.validated.classified_stream_length_stdev=std(wbFG_streamLengths(survivorVec));
         
     else
 
