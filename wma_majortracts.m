@@ -162,13 +162,8 @@ tdir = fullfile(fileparts(which('mrDiffusion.m')), 'templates');
 
 %% Read the data
 % Load the dt6 file from disk
-if ischar(dt6File)
-    dt = dtiLoadDt6(dt6File);
-    baseDir = fileparts(dt6File); 
-else
-    dt = dt6File;
-    baseDir = fileparts(dt.dataFile);
-    dt6File = dt.dataFile;
+if ischar(dt)
+    dt = dtiLoadDt6();
 end
 
 %% Spatially normalize diffusion data with the MNI (ICBM) template
@@ -196,10 +191,6 @@ tIm = mrAnatResliceSpm(double(Vtemplate.dat), inv(Vtemplate.mat), bb, [2 2 2], [
 im(:,:,:,1) = uint8(tIm);
 im(:,:,:,2) = uint8(round(clip(alignIm_sn)*255));
 im(:,:,:,3) = im(:,:,:,2);
-
-% Save an image of the spatially normalized data showing the quality of the
-% alignment
-imwrite(makeMontage(im),fullfile(baseDir, 'SpatialNormalization.png'));
 
 %% Compute fiber group probabilities using the atlas proceedure of Hua.2008
 %
