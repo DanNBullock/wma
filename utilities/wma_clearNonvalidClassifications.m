@@ -41,5 +41,5 @@ end
 %% set nonvalidated classifications to 0
 invalidIndicies=find(fe.life.fit.weights>0);
 
-classification.indexes(invalidIndicies)=0;
+classification.index(invalidIndicies)=0;
 end
