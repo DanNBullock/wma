@@ -54,6 +54,17 @@ roi_names = {'fusiform.mat' 'inferiortemporal.mat'...
 L_roi_all.name = 'LVOT';
 R_roi_all.name = 'RVOT';
 
+% Remove fibers that are less than 2cm
+% theoretically not necessary because none of the input fibers are less
+% than 10 mm.
+% CHECK CHECK CHECK
+L  = cellfun(@(x) length(x),fg.fibers);
+ac = cellfun(@(x) max(x(2,:)),fg.fibers);
+fasciles_long_indices      = L > minLength; %#ok<*NASGU>
+fascicles_anterior_indices = ac < antBoundary;%was done in terms of length instead of antBoundary
+fascicles_indices          = and(fasciles_long_indices, fascicles_anterior_indices );
+fascicles_identities       = find(fascicles_indices);
+
 %% Find all vertical fibers projecting to VOT
 % Intersect fibers with ROI
 [L_fg, ~, L_vertical_fascicles_indices] = dtiIntersectFibersWithRoi([],{'and' 'endpoints'},4,L_roi_all,fg);
