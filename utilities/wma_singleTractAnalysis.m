@@ -40,6 +40,8 @@ function [tractStats] = wma_singleTractAnalysis(indices,fe,WBFG,dt6)
 %if it is a fe structure, get the wbFG out of it
 if ~notDefined('fe')&&~isempty(fe)
         [vl] =wma_singleVirtualLesion(fe,indices);
+        
+        posIndicies=indices(ismember(indices,(find(fe.life.fit.weights>0))));
     else
         fprintf('\n fe structure not detected, will not run virtual lesion \n')
 
@@ -50,11 +52,11 @@ tractStats.vl=vl;
 
 [tractStats.morph.meanLength, tractStats.morph.lengthSTDEV, tractStats.morph.totalLength,...
     tractStats.morph.streamCount, tractStats.morph.volume,...
-    tractStats.morph.streamLengths]=wma_singleTractStatQuantification(WBFG,indices);
+    tractStats.morph.streamLengths]=wma_singleTractStatQuantification(WBFG,posIndicies);
 
 %% Tract Profiles
 %doesn't work right now?
 [tractStats.diffusion.fa, tractStats.diffusionmd, tractStats.diffusion.rd,...
-    tractStats.diffusion.ad]=wma_singleTractProfile(indices,WBFG,dt6);
+    tractStats.diffusion.ad]=wma_singleTractProfile(posIndicies,WBFG,dt6);
 
 end
