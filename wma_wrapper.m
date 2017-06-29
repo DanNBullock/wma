@@ -98,6 +98,6 @@ classification.index(RightMdLFindexes)=28;
 %    classification.names{itracts}(spaceIndices)='_';
 %end
 
-disp('Tracts segmentation complete');
+disp('\n Streamline classification complete');
 
 return
