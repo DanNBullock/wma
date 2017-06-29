@@ -1,4 +1,4 @@
-function [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = wma_find_vertical_fibers(fgPath,fsDir,outdir,thresh, v_crit, minLength)
+function [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = wma_find_vertical_fibers(fg,fsDir,outdir,thresh, v_crit, minLength)
 % Find vertically oriented fibers projecting to VOT
 %
 % [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = AFQ_FindVerticalFibers(fgPath,fsROIdir,outdir,thresh,v_crit, minLength)
@@ -25,68 +25,23 @@ function [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fasc
 
 % Remove any fiber that doesn't go vertical (positive z) for thresh% of its
 % coordinates
-if notDefined('thresh')
+
     thresh = [.95 .6];
-end
+
 % Fibers must travel this much farther vertically than other directions
-if notDefined('v_crit')
+
     v_crit = 1.3;
-end
+
 % Minumum length
-if notDefined('minLength')
+
     minLength = 20;
-end
+
 %% Set paths and load fibers
-if notDefined('antBoundary')
+
     antBoundary = -15;
-end
+
 roi_names = {'fusiform.mat' 'inferiortemporal.mat'...
     'lateraloccipital.mat'}; %'middletemporal.mat'
-
-% Path to ROIs
-if notDefined('fsDir')
-    fsROIdir = uigetdir([],'Select the appropriate FreeSurfer subject directory');
-end
-
-% Path to fibers
-if notDefined('fgPath')
-    [fname,pname]=uigetfile('*','Select Fiber Group',[],'MultiSelect','on');
-    if iscell(fname)
-        for ii=1:length(fname)
-            fgPath{ii} = fullfile(pname{ii},fname{ii});
-        end
-    else
-        fgPath = fullfile(pname,fname);
-    end
-end
-% output directory
-if notDefined('outdir')
-    outdir = uigetdir([],'Select an output directory');
-end
-
-% Load fibers. If there are multiple fiber groups merge them into 1
-if iscell(fgPath)
-    fg = fgRead(fgPath{1});
-    for ii = 2:length(fgPath)
-        % Load and merge each fiber group
-        fgtmp = fgRead(fgPath{ii});
-        fg    = dtiMergeFiberGroups(fg,fgtmp);
-    end
-elseif ischar(fgPath)
-    fg = fgRead(fgPath);
-elseif isstruct(fgPath);
-    fg = fgPath;
-end
-
-% Remove fibers that are less than 2cm
-% CHECK CHECK CHECK
-L  = cellfun(@(x) length(x),fg.fibers);
-ac = cellfun(@(x) max(x(2,:)),fg.fibers);
-fasciles_long_indices      = L > minLength; %#ok<*NASGU>
-fascicles_anterior_indices = ac < antBoundary;%was done in terms of length instead of antBoundary
-fascicles_indices          = and(fasciles_long_indices, fascicles_anterior_indices );
-fascicles_identities       = find(fascicles_indices);
-fg.fibers                  = fg.fibers(fascicles_indices);
 
 %% Create VOT roi from freesurfer ROIs
 % We select a few FreeSurfer ROIs from the segmentation.
