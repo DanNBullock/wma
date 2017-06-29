@@ -1,5 +1,5 @@
 function[figHandle, results]= bsc_feAndAFQqualityCheck(fe, classification, saveDir)
-%function[figHandle, results]= bsc_feAndAFQqualityCheck(fe, classification, saveDir)
+%function[figHandle, results]= bsc_feAndAFQqualityCheck(fe, afq_classificiation, saveDir)
 %
 % This function computes a number of statistics for an input fe structure,
 % and, if included, an afq segmentation.  if you include a saveDir variable
@@ -49,7 +49,7 @@ if ischar(fe)
     load(fe);
 end
 
-% gets streamlines from the FE structure 
+% gets streamlines from the FE structure
 wbFG=feGet(fe,'fibers acpc');
 % NOTE: the acpc transform must be applied to the WBFG because the fibers
 % in the fe.fg structure are in image space (which would result in oddities
@@ -59,18 +59,16 @@ wbFG=feGet(fe,'fibers acpc');
 % gets positively weighted streamlines and their indexes
 posIndexes=find(fe.life.fit.weights>0);
 
-%a test for nans in weight values
+%a test for the
 if isempty(find(isnan(fe.life.fit.weights),1))>0
     nanNum=length(find(isnan(fe.life.fit.weights)));
     fprintf('\n %i NaN values detected in fe.life.fit.weights', nanNum)
 end
 
 pos_fg=wbFG;
-pos_fg.fibers=[];
-for ifibers =1:length(posIndexes)
-pos_fg.fibers{ifibers}=wbFG.fibers{posIndexes(ifibers)};
-end
-pos_fg.fibers=pos_fg.fibers';
+pos_fg.fibers=wbFG.fibers(posIndexes);
+
+
 
 %% resultStrucStuff
 % computes length of positively weighted streamlines
@@ -92,15 +90,15 @@ allvoxelsErr= feGet(fe, 'voxrmses0norm');
 results.LiFEstats.RMSE.voxel_average_=mean(allvoxelsErr(~isnan(allvoxelsErr)));
 results.LiFEstats.RMSE.voxel_stdev=std(allvoxelsErr(~isnan(allvoxelsErr)));
 results.LiFEstats.RMSE.voxel_count=length(allvoxelsErr);
-% Gets the total RMSE for the tractography model.  Not equivalent to 
+% Gets the total RMSE for the tractography model.  Not equivalent to
 % sum(allvoxelsErr(~isnan(allvoxelsErr))), hence the above concern.
 results.LiFEstats.RMSE.WB=feGet(fe,'rmsetotal');
 % Whole model error sum
 results.LiFEstats.RMSE.WB_norm_total=sum(allvoxelsErr(~isnan(allvoxelsErr)));
 
 % Computes total length of pre and post LiFE streamline connectome.
-% Compares the values to get proportional reduction in total connectome 
-% streamline length.  
+% Compares the values to get proportional reduction in total connectome
+% streamline length.
 results.LiFEstats.WBFG.length_total=sum(wbFG_streamLengths);
 results.LiFEstats.validated.streams_length_total=sum(pos_fg_streamLengths);
 results.LiFEstats.validated.WBFG_length_reduc_proportion=results.LiFEstats.validated.streams_length_total/results.LiFEstats.WBFG.length_total;
@@ -125,14 +123,16 @@ results.LiFEstats.WBFG.stream_length_stdev=std(wbFG_streamLengths);
 results.LiFEstats.validated.stream_max_length=max(pos_fg_streamLengths);
 results.LiFEstats.WBFG.stream_max_length=max(wbFG_streamLengths);
 
+
+
 %% AFQ additions
 % if a classification (path or object) was passed into the function, adds
 % AFQ relevant stats to the results structure, otherwise moves on.
-if ~notDefined('afq_classificiation')    
-        % Vector containging indexes of all streamlines classified by AFQ
-        AFQIndexVec=find(afq_classificiation.index);
-        
-    if length(afq_classificiation.index)==results.LiFEstats.validated.stream_count
+if ~notDefined('classification')
+    % Vector containging indexes of all streamlines classified by AFQ
+    AFQIndexVec=find(classification.index);
+    
+    if length(classification.index)==results.LiFEstats.validated.stream_count
         
         life2afqFlag=true;
         
@@ -153,7 +153,7 @@ if ~notDefined('afq_classificiation')
         
         % Counts number of nonzero (i.e., classified) entries in the
         % classification.index field.
-        results.AFQstats.validated.classified_stream_count=length(find(afq_classificiation.index));
+        results.AFQstats.validated.classified_stream_count=length(find(classification.index));
         % Divides the AFQ classification count by the total WBFG streamline
         % count to get the proportion of streamlines classified by AFQ
         results.AFQstats.validated.classified_stream_proportion=results.AFQstats.validated.classified_streams_count/results.LiFEstats.WBFG.stream_count;
@@ -162,10 +162,10 @@ if ~notDefined('afq_classificiation')
         results.AFQstats.validated.classified_stream_avg_length=mean(wbFG_streamLengths(AFQIndexVec));
         results.AFQstats.validated.classified_stream_length_stdev=std(wbFG_streamLengths(AFQIndexVec));
         
-    elseif length(afq_classificiation.index)==results.LiFEstats.WBFG.stream_count
-    
-        life2afqFlag=false;
-    
+    elseif length(classification.index)==results.LiFEstats.WBFG.stream_count
+        
+         life2afqFlag=false;
+        
         % If the number of items in the AFQ classification structure is NOT
         % equal to the number of positively weighted fibers in the WBFG we
         % assume that AFQ was run independent of LiFE
@@ -179,7 +179,7 @@ if ~notDefined('afq_classificiation')
         % in the WBFG
         results.AFQstats.WBFG.classified_stream_avg_length=mean(wbFG_streamLengths(AFQIndexVec));
         results.AFQstats.WBFG.classified_stream_length_stdev=std(wbFG_streamLengths(AFQIndexVec));
-
+        
         % Vector containing streamline indexes that were classified by AFQ and
         % validated by LiFE
         survivorVec=AFQIndexVec(ismember(AFQIndexVec,posIndexes));
@@ -194,7 +194,7 @@ if ~notDefined('afq_classificiation')
         results.AFQstats.validated.classified_stream_length_stdev=std(wbFG_streamLengths(survivorVec));
         
     else
-
+        
         fprintf('\n Number of streamlines classified by AFQ is neither equal to total number of streamlines in WBFG nor total number of validated streamlines. \n')
         fprintf('\n Length of classification.index field should be exactly equal to number of streamlines from input tractography structure\n');
         % usually running afq with interhemispheric split ends up
@@ -202,17 +202,17 @@ if ~notDefined('afq_classificiation')
         % indexing scheme.
         fprintf('\n Likely cause is default interhemisphericsplit behavior of AFQ\n');
         keyboard
-
+        
     end
-
+    
 end
-%% figure setup and computation 
+%% figure setup and computation
 figure
 
 % Sets figure into appropriate aspect ratio.  First two entries in [2 2 25 5]
 % are arbitrary
 set(gcf,'Units','inches',...
- 'Position',[2 2 25 10]);
+    'Position',[2 2 25 10]);
 
 % Compute the bin counts of the WBFG and validatedstreamline lengths,
 % binned at 1mm.
@@ -220,126 +220,124 @@ set(gcf,'Units','inches',...
 [validHist, ~]=histcounts(pos_fg_streamLengths,(10:220));
 
 %% AFQ CASE
-if ~notDefined('afq_classificiation')
-% Do the same for the AFQ classified tracts
-[WBFGclassHist, ~]=histcounts(wbFG_streamLengths(AFQIndexVec),(10:220));
-[validClassHist, ~]=histcounts(wbFG_streamLengths(survivorVec),(10:220));
-
-%% standard Life Plots
-% Plot comparing pre and post life streamline counts by length
-subplot(2,3,1)
-hold on
-plot ((11:220),WBFGhist,'b', 'LineWidth',1.25)
-plot ((11:220),validHist,'r', 'LineWidth',1.25)
-title('WBFG & Validated Stream Count Comparison')
-legend('WBFG','Validated')
-xlabel('Streamline Length (mm)')
-ylabel('Streamline Count')
-
-% Plot comparing normalized pre and post life streamline counts by length
-subplot(2,3,2)
-hold on
-plot ((11:220),WBFGhist/results.LiFEstats.WBFG.stream_count,'b', 'LineWidth',1.25)
-plot ((11:220),validHist/results.LiFEstats.validated.stream_count,'r', 'LineWidth',1.25)
-title('Normalized WBFG & Validated Stream Count Comparison')
-legend('WBFG','Validated')
-xlabel('Streamline Length (mm)')
-ylabel('Whole Brain proportion')
-
-% Plot illustrating the bias in the validated streamlines as assocaited
-% with length
-subplot(2,3,3)
-plot ((11:220),((WBFGhist/results.LiFEstats.WBFG.stream_count)-(validHist/results.LiFEstats.validated.stream_count)),'g', 'LineWidth',1.25)
-title('Validation Bias Relative to Streamline Length')
-ylim([-.0175,.01])
-legend('WBFG ratio - Validated ratio')
-xlabel('Streamline Length (mm)')
-ylabel('Validation bias')
-
-%% Plots Specific to AFQ Output
-% Plot comparing pre and post life streamline counts by length
-subplot(2,3,4)
-hold on
-plot ((11:220),WBFGclassHist,'b', 'LineWidth',1.25)
-plot ((11:220),validClassHist,'r', 'LineWidth',1.25)
-title('AFQ Classified WBFG & Validated Stream Count Comparison')
-legend('WBFG, AFQ classified','Validated & AFQ classified')
-xlabel('Streamline Length (mm)')
-ylabel('Streamline Count')
-
-% Plot comparing normalized pre and post life streamline counts by length
-subplot(2,3,5)
-hold on
-
-%plot ((11:220),WBFGclassHist/results.AFQstats.WBFG.classified_stream_count,'b', 'LineWidth',1.25)
-%plot ((11:220),validClassHist/results.AFQstats.validated.classified_stream_count,'r', 'LineWidth',1.25)
-plot ((11:220),(WBFGclassHist/results.LiFEstats.WBFG.stream_count)*100,'b', 'LineWidth',1.25)
-plot ((11:220),(validClassHist/results.LiFEstats.validated.stream_count)*100,'r', 'LineWidth',1.25)
-
-title('Normalized, AFQ Classified WBFG & Validated Stream Count Comparison')
-legend('WBFG, AFQ classified','Validated & AFQ classified')
-xlabel('Streamline Length (mm)')
-ylabel('Proportion of Whole Brain Streamlines Classified (%)')
-
-% Plot illustrating the bias in the validated streamlines as assocaited
-% with length
-if ~life2afqFlag
-    % Computation gets unweildy, so here we use an intermediary variable
-    computeVec=((WBFGclassHist/results.AFQstats.WBFG.classified_stream_count)-(validClassHist/results.AFQstats.validated.classified_stream_count))-...
-        ((WBFGhist/results.LiFEstats.WBFG.stream_count)- (validHist/results.LiFEstats.validated.stream_count));
+if ~notDefined('classification')
+    % Do the same for the AFQ classified tracts
+    [WBFGclassHist, ~]=histcounts(wbFG_streamLengths(AFQIndexVec),(10:220));
+    [validClassHist, ~]=histcounts(wbFG_streamLengths(survivorVec),(10:220));
     
-    subplot(2,3,6)
+    %% standard Life Plots
+    % Plot comparing pre and post life streamline counts by length
+    subplot(2,3,1)
     hold on
-    plot ((11:220),((WBFGclassHist/results.AFQstats.WBFG.classified_stream_count)-(validClassHist/results.AFQstats.validated.classified_stream_count)),'g', 'LineWidth',1.25)
-    plot ((11:220),computeVec,'c', 'LineWidth',1.25)
-    title('Validation bias relative to streamline length and specificity to AFQ classification')
-    ylim([-.0175,.01])
-    legend('WBFG ratio - Validated ratio, AFQ classified - General','WBFG ratio - Validated ratio, AFQ classified - Specific')
+    plot ((11:220),WBFGhist,'b', 'LineWidth',1.25)
+    plot ((11:220),validHist,'r', 'LineWidth',1.25)
+    title('WBFG & Validated Stream Count Comparison')
+    legend('WBFG','Validated')
     xlabel('Streamline Length (mm)')
-    ylabel('VAlidation bias')
-end
-
+    ylabel('Streamline Count')
+    
+    % Plot comparing normalized pre and post life streamline counts by length
+    subplot(2,3,2)
+    hold on
+    plot ((11:220),WBFGhist/results.LiFEstats.WBFG.stream_count,'b', 'LineWidth',1.25)
+    plot ((11:220),validHist/results.LiFEstats.validated.stream_count,'r', 'LineWidth',1.25)
+    title('Normalized WBFG & Validated Stream Count Comparison')
+    legend('WBFG','Validated')
+    xlabel('Streamline Length (mm)')
+    ylabel('Whole Brain proportion')
+    
+    % Plot illustrating the bias in the validated streamlines as assocaited
+    % with length
+    subplot(2,3,3)
+    plot ((11:220),((WBFGhist/results.LiFEstats.WBFG.stream_count)-(validHist/results.LiFEstats.validated.stream_count)),'g', 'LineWidth',1.25)
+    title('Validation Bias Relative to Streamline Length')
+    ylim([-.0175,.01])
+    legend('WBFG ratio - Validated ratio')
+    xlabel('Streamline Length (mm)')
+    ylabel('Validation bias')
+    
+    %% Plots Specific to AFQ Output
+    % Plot comparing pre and post life streamline counts by length
+    subplot(2,3,4)
+    hold on
+    plot ((11:220),WBFGclassHist,'b', 'LineWidth',1.25)
+    plot ((11:220),validClassHist,'r', 'LineWidth',1.25)
+    title('AFQ Classified WBFG & Validated Stream Count Comparison')
+    legend('WBFG, AFQ classified','Validated & AFQ classified')
+    xlabel('Streamline Length (mm)')
+    ylabel('Streamline Count')
+    
+    % Plot comparing normalized pre and post life streamline counts by length
+    subplot(2,3,5)
+    hold on
+    
+    %plot ((11:220),WBFGclassHist/results.AFQstats.WBFG.classified_stream_count,'b', 'LineWidth',1.25)
+    %plot ((11:220),validClassHist/results.AFQstats.validated.classified_stream_count,'r', 'LineWidth',1.25)
+    plot ((11:220),(WBFGclassHist/results.LiFEstats.WBFG.stream_count)*100,'b', 'LineWidth',1.25)
+    plot ((11:220),(validClassHist/results.LiFEstats.validated.stream_count)*100,'r', 'LineWidth',1.25)
+    
+    title('Normalized, AFQ Classified WBFG & Validated Stream Count Comparison')
+    legend('WBFG, AFQ classified','Validated & AFQ classified')
+    xlabel('Streamline Length (mm)')
+    ylabel('Proportion of Whole Brain Streamlines Classified (%)')
+    
+    % Plot illustrating the bias in the validated streamlines as assocaited
+    % with length
+    if ~life2afqFlag
+        % Computation gets unweildy, so here we use an intermediary variable
+        computeVec=((WBFGclassHist/results.AFQstats.WBFG.classified_stream_count)-(validClassHist/results.AFQstats.validated.classified_stream_count))-...
+            ((WBFGhist/results.LiFEstats.WBFG.stream_count)- (validHist/results.LiFEstats.validated.stream_count));
+        
+        subplot(2,3,6)
+        hold on
+        plot ((11:220),((WBFGclassHist/results.AFQstats.WBFG.classified_stream_count)-(validClassHist/results.AFQstats.validated.classified_stream_count)),'g', 'LineWidth',1.25)
+        plot ((11:220),computeVec,'c', 'LineWidth',1.25)
+        title('Validation bias relative to streamline length and specificity to AFQ classification')
+        ylim([-.0175,.01])
+        legend('WBFG ratio - Validated ratio, AFQ classified - General','WBFG ratio - Validated ratio, AFQ classified - Specific')
+        xlabel('Streamline Length (mm)')
+        ylabel('VAlidation bias')
+    end
+    
 else
-   %% standard Life Plots
-% Plot comparing pre and post life streamline counts by length
-subplot(1,3,1)
-hold on
-plot ((11:220),WBFGhist,'b', 'LineWidth',1.25)
-plot ((11:220),validHist,'r', 'LineWidth',1.25)
-title('WBFG & Validated Stream Count Comparison')
-legend('WBFG','Validated')
-xlabel('Streamline Length (mm)')
-ylabel('Streamline Count')
-
-% Plot comparing normalized pre and post life streamline counts by length
-subplot(1,3,2)
-hold on
-plot ((11:220),WBFGhist/results.LiFEstats.WBFG.stream_count,'b', 'LineWidth',1.25)
-plot ((11:220),validHist/results.LiFEstats.validated.stream_count,'r', 'LineWidth',1.25)
-title('Normalized WBFG & Validated Stream Count Comparison')
-legend('WBFG','Validated')
-xlabel('Streamline Length (mm)')
-ylabel('Whole Brain proportion')
-
-% Plot illustrating the bias in the validated streamlines as assocaited
-% with length
-subplot(1,3,3)
-plot ((11:220),((WBFGhist/results.LiFEstats.WBFG.stream_count)-(validHist/results.LiFEstats.validated.stream_count)),'g', 'LineWidth',1.25)
-title('Validation Bias Relative to Streamline Length')
-ylim([-.0175,.01])
-legend('WBFG ratio - Validated ratio')
-xlabel('Streamline Length (mm)')
-ylabel('Validation bias') 
+    %% standard Life Plots
+    % Plot comparing pre and post life streamline counts by length
+    subplot(1,3,1)
+    hold on
+    plot ((11:220),WBFGhist,'b', 'LineWidth',1.25)
+    plot ((11:220),validHist,'r', 'LineWidth',1.25)
+    title('WBFG & Validated Stream Count Comparison')
+    legend('WBFG','Validated')
+    xlabel('Streamline Length (mm)')
+    ylabel('Streamline Count')
+    
+    % Plot comparing normalized pre and post life streamline counts by length
+    subplot(1,3,2)
+    hold on
+    plot ((11:220),WBFGhist/results.LiFEstats.WBFG.stream_count,'b', 'LineWidth',1.25)
+    plot ((11:220),validHist/results.LiFEstats.validated.stream_count,'r', 'LineWidth',1.25)
+    title('Normalized WBFG & Validated Stream Count Comparison')
+    legend('WBFG','Validated')
+    xlabel('Streamline Length (mm)')
+    ylabel('Whole Brain proportion')
+    
+    % Plot illustrating the bias in the validated streamlines as assocaited
+    % with length
+    subplot(1,3,3)
+    plot ((11:220),((WBFGhist/results.LiFEstats.WBFG.stream_count)-(validHist/results.LiFEstats.validated.stream_count)),'g', 'LineWidth',1.25)
+    title('Validation Bias Relative to Streamline Length')
+    ylim([-.0175,.01])
+    legend('WBFG ratio - Validated ratio')
+    xlabel('Streamline Length (mm)')
+    ylabel('Validation bias')
     
 end
 %gets figure handle
 figHandle=gcf;
 
 if ~notDefined('saveDir')
-saveas(gcf,strcat(saveDir,'/fe_AFQ_StatPlot.png'));
-save(strcat(saveDir,'/fe_AFQ_resultStruc.mat'),'results')
+    saveas(gcf,strcat(saveDir,'/fe_AFQ_StatPlot.png'));
+    save(strcat(saveDir,'/fe_AFQ_resultStruc.mat'),'results')
 end
 
 end
-
-
