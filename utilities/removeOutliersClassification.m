@@ -53,7 +53,7 @@ end
 % if selectPrune is not defined, just assume the user wants to prune all
 % the tracts.
 if notDefined('selectPrune')
-selectPrune=length(classification.names);
+selectPrune=1:length(classification.names);
 end
 
 if notDefined('centroidSD')
@@ -74,7 +74,7 @@ tractFG=wbFG;
 tractFG.fibers=[];
 
 pruneTotal=0;
-for itracts=1:selectPrune
+for itracts=selectPrune
     tractFG.name=classification.names{itracts};
     indexes=find(classification.index==itracts);
     tractFG.fibers=wbFG.fibers(indexes);
