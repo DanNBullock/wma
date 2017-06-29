@@ -25,26 +25,7 @@ function  [L_pArc, L_TPC, L_pArc_Indexes,L_TPC_Indexes ,R_pArc, R_TPC, R_pArc_In
 
 %% parameter note & initialization
 
-    %this version relies on the aparc.a2009s+aseg file.  Here we make a
-    %nii.gz version of one doesn't already exist.  keyboards out if there's
-    %an error doing this
-    if ~exist(strcat(fsDir,'/mri/aparc.a2009s+aseg.nii.gz'))
-        %apaprently necessary for matlab?
-        spaceChar={' '};
-        [status result] = system(strcat('mri_convert',spaceChar,fsDir,'/mri/aparc.a2009s+aseg.mgz',spaceChar, fsDir, '/mri/aparc.a2009s+aseg.nii.gz'));
-        if status==0
-            fprintf('/n Error generating aseg nifti file.  There may be a problem finding the aparc.a2009s+aseg file.')
-            keyboard
-        end
-    end
-    
-        %reads in label data
-    labelNifti=niftiRead(strcat(fsDir, '/mri/aparc.a2009s+aseg.nii.gz'));
-    %generates a blank boolean array that corresponds to the dimensions of
-    %the fs aparc + aseg nifti data. 
-    sizeLabelNifti=size(labelNifti.data);
-    blankLabelNifti(1:sizeLabelNifti(1),1:sizeLabelNifti(2),1:sizeLabelNifti(3))=false;
-    
+   
         %these 3 digit numbers correspond to the last 3 digits of the DK 2009
     %freesurfer look up table numbers.
     %(see:  https://surfer.nmr.mgh.harvard.edu/fswiki/FsTutorial/AnatomicalROI/FreeSurferColorLUT)
