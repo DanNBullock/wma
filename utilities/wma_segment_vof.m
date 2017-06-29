@@ -1,5 +1,5 @@
 function [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes] = ...
-       wma_segment_vof(wholebrainfgPath, fsROIdir,classification, dt, thresh,v_crit, arcThresh, parcThresh)
+       wma_segment_vof(fg, fsROIdir,classification, dt, thresh,v_crit, arcThresh, parcThresh)
 % Segment the VOF from a wholebrain connectome
 %
 % [L_VOF, R_VOF, L_VOF_Indexes, R_VOF_Indexes] = wma_segment_vof(wholebrainfgPath,,fsROIdir,thresh,v_crit, dt, arcThresh, parcThresh)
@@ -58,6 +58,9 @@ end
 
 %% Find vertical fibers
 
+% this will almost certianly cause a problem if it is used elsewhere
+% with a different naming schema.
+
 for iTracts = 1:length(classification.names)
     if strcmp(classification.names{iTracts}(1),'L')
         leftVec(iTracts)=true;
@@ -80,31 +83,24 @@ end
 
 L_arcuate  = dtiNewFiberGroup('L_arcuate');
 L_arcIndexes=find(classification.index==(find(leftVec&ArcuateVec)));
-L_arcuate.fibers=wholebrainfgPath.fibers{L_arcIndexes};
+L_arcuate.fibers=fg.fibers{L_arcIndexes};
 
 R_arcuate  = dtiNewFiberGroup('R_arcuate');
 R_arcIndexes=find(classification.index==(find(rightVec&ArcuateVec)));
-R_arcuate.fibers=wholebrainfgPath.fibers{R_arcIndexes};
+R_arcuate.fibers=fg.fibers{R_arcIndexes};
 
 L_pArc  = dtiNewFiberGroup('L_pArc');
 L_pArcIndexes=find(classification.index==(find(leftVec&pArcVec)));
-L_pArc.fibers=wholebrainfgPath.fibers{L_pArcIndexes};
+L_pArc.fibers=fg.fibers{L_pArcIndexes};
 
 R_pArc  = dtiNewFiberGroup('L_pArc');
 R_pArcIndexes=find(classification.index==(find(leftVec&pArcVec)));
-R_pArc.fibers=wholebrainfgPath.fibers{R_pArcIndexes};
+R_pArc.fibers=fg.fibers{R_pArcIndexes};
 
 % From the wholebrain fiber group find all the vertical fibers that
 % terminate in ventral occipitotemporal cortex (VOT).
 
-% this will almost certianly cause a problem if it is used elsewhere
-% with a different naming schema.
-L_VOF      = dtiNewFiberGroup('R_VOF');
-L_pArc_vot = dtiNewFiberGroup('L_posteriorArcuate_vot');
-R_VOF      = dtiNewFiberGroup('R_VOF');
-R_pArc_vot = dtiNewFiberGroup('R_posteriorArcuate_vot');
-
-[L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = wma_find_vertical_fibers(wholebrainfgPath,fsROIdir,thresh,v_crit);
+[L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = wma_find_vertical_fibers(fg,fsROIdir);
 
 
 %% Separate VOF from arcuate
@@ -125,8 +121,7 @@ if ~isempty(L_fg_vert.fibers)
     % Remove fibers that overlap with the arcuate for more than arcThresh nodes
     L_VOF.fibers = L_fg_vert.fibers(fgMvals<arcThresh);
     L_VOF_Indexes = L_vertical_fascicles_identities(fgMvals<arcThresh);
-    L_pArc_vot.fibers =  L_fg_vert.fibers(fgMvals>=arcThresh);
-    L_pArc_vot_Indexes = L_vertical_fascicles_identities(fgMvals>=arcThresh); 
+
     
     % From the VOF fiber group, remove any fibers that are further anterior
     % than the core of the posterior arcuate.
@@ -135,15 +130,14 @@ if ~isempty(L_fg_vert.fibers)
         L_VOF_keep = cellfun(@(x) all(x(2,:) < ymaxL),L_VOF.fibers);
         
         % Add fibers that are being removed to pArc_vot
-        L_pArc_vot.fibers  = vertcat(L_pArc_vot.fibers,L_VOF.fibers(~L_VOF_keep));
-        L_pArc_vot_Indexes = vertcat(L_pArc_vot_Indexes,L_VOF_Indexes(~L_VOF_keep));
+
         L_VOF.fibers  = L_VOF.fibers(L_VOF_keep);
         L_VOF_Indexes = L_VOF_Indexes(L_VOF_keep);
     end
     
 else
     L_VOF = [];
-    L_pArc_vot = [];
+
 end
 
 %% Repeat for the right hemisphere
@@ -162,8 +156,6 @@ if ~isempty(R_fg_vert.fibers)
     R_VOF.fibers       = R_fg_vert.fibers(fgMvals<arcThresh);
     R_VOF_Indexes      = R_vertical_fascicles_identities(fgMvals<arcThresh);
     
-    R_pArc_vot.fibers  = R_fg_vert.fibers(fgMvals>=arcThresh);
-    R_pArc_vot_Indexes = R_vertical_fascicles_identities(fgMvals>=arcThresh);
     
     % From the VOF fiber group, remove any fibers that are further anterior
     % than the core of the posterior arcuate.
@@ -172,15 +164,14 @@ if ~isempty(R_fg_vert.fibers)
         R_VOF_keep = cellfun(@(x) all(x(2,:)<ymaxR),R_VOF.fibers);
         
         % Add fibers that are being removed to pArc_vot
-        R_pArc_vot.fibers  = vertcat(R_pArc_vot.fibers,R_VOF.fibers(~R_VOF_keep));
-        R_pArc_vot_Indexes = vertcat(R_pArc_vot_Indexes,R_VOF_Indexes(~R_VOF_keep));
+
         R_VOF.fibers       = R_VOF.fibers(R_VOF_keep);
         R_VOF_Indexes      = R_VOF_Indexes(R_VOF_keep);
     end
     
 else
     R_VOF=[];
-    R_pArc_vot=[];
+
 end
 
 return
