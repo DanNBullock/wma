@@ -1,4 +1,4 @@
-function [classification] = wma_majortracts_v2(dt, wbfg)
+function [classification] = wma_majortracts(dt, wbfg)
 %
 % Segments 20 tracts defined in the JHU White Matter Atlas (Zhang et al., 2008).
 %
@@ -290,7 +290,7 @@ end
 
 % Populate the structure denoting the fiber group number that each fiber in
 % the origional wholebrain group was assigned to
-fiberIndex = zeros(length(fg.fibers),1);
+fiberIndex = zeros(length(wbfg.fibers),1);
 
 for ii = 1 : length(curAtlasFibers)
     fiberIndex(curAtlasFibers{ii}) = ii;
