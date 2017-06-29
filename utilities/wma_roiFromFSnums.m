@@ -34,28 +34,11 @@ if notDefined('smoothKernel'), smoothFlag = false;end
 % If the length  of the ID is less than 5 then it is safe to assume that the origional
 % segmentation is being used.
 if length( num2str(fsROInums(1))) < 5
-    niiPath=fullfile(fsDir,'/mri/','aparc+aseg.nii.gz');
-    mgzfile='aparc+aseg.mgz';
+    atlasNifti = wma_getAsegFile(fsDir , 'orig');
 else
-    niiPath=fullfile(fsDir,'/mri/','aparc.a2009s+aseg.nii.gz');
-    mgzfile='aparc.a2009s+aseg.mgz';
+    atlasNifti = wma_getAsegFile(fsDir , '2009')
 end
 
-% Make the aparc aseg file if it does not exist
-if ~exist(niiPath,'file')
-    spaceChar={' '};
-    quoteString=strcat('mri_convert',spaceChar, fsDir,'/mri/',mgzfile ,spaceChar, niiPath);
-    quoteString=quoteString{:};
-    [status result] = system(quoteString);
-    if status~=0
-        error('/n Error generating aseg nifti file.  There may be a problem finding the file.')
-    end
-end
-
-%% iteratively use aparc atlas to make combined ROI
-
-% read in the appropriate aseg niftifile
-atlasNifti = niftiRead(niiPath);
 
 % get size of atlasNifti.data and make a blank matrix mask for it
 atlasDataSize = size(atlasNifti.data);
