@@ -83,19 +83,20 @@ end
 
 L_arcuate  = dtiNewFiberGroup('L_arcuate');
 L_arcIndexes=find(classification.index==(find(leftVec&ArcuateVec)));
-L_arcuate.fibers=fg.fibers{L_arcIndexes};
+L_arcuate.fibers=fg.fibers(L_arcIndexes);
 
 R_arcuate  = dtiNewFiberGroup('R_arcuate');
 R_arcIndexes=find(classification.index==(find(rightVec&ArcuateVec)));
-R_arcuate.fibers=fg.fibers{R_arcIndexes};
+R_arcuate.fibers=fg.fibers(R_arcIndexes);
 
 L_pArc  = dtiNewFiberGroup('L_pArc');
 L_pArcIndexes=find(classification.index==(find(leftVec&pArcVec)));
-L_pArc.fibers=fg.fibers{L_pArcIndexes};
+L_pArc.fibers=fg.fibers(L_pArcIndexes);
 
 R_pArc  = dtiNewFiberGroup('L_pArc');
 R_pArcIndexes=find(classification.index==(find(leftVec&pArcVec)));
-R_pArc.fibers=fg.fibers{R_pArcIndexes};
+R_pArc.fibers=fg.fibers(R_pArcIndexes);
+
 
 % From the wholebrain fiber group find all the vertical fibers that
 % terminate in ventral occipitotemporal cortex (VOT).
