@@ -19,6 +19,7 @@ function [results, classificationRAW]= wma_segmentAndAnalyze(fe,dt6,fsDIR)
 % connectome and the segmented tracts.  
 %%  preliminary loading
 %
+tic
 if ischar(fe)
     load(fe);
     %haven't been able to test this with (path to wbFG passed in) yet.
@@ -36,6 +37,9 @@ classificationCut= removeOutliersClassification(classificationRAW,fe, 4, 4, 1:20
 
 results.AFQstats.tractStats=tractStats;
 results.AFQstats.classification=classificationCut;
+
+segTime=toc;
+fprintf('\n Segmentation and analysis for %s has taken %4.2f hours.', fe.name, segTime/(60*60))
 
 end
 
