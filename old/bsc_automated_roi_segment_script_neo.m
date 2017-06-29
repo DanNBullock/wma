@@ -22,9 +22,9 @@ function  [L_pArc, L_TPC, L_pArc_Indexes,L_TPC_Indexes ,R_pArc, R_TPC, R_pArc_In
 
 % (C) Daniel Bullock, 2017, Indiana University
 
-
 %% parameter note & initialization
 
+labelNifti= wma_getAsegFile(fsDir , '2009');
    
         %these 3 digit numbers correspond to the last 3 digits of the DK 2009
     %freesurfer look up table numbers.
