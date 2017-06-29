@@ -104,7 +104,7 @@ L_pArc_vot = dtiNewFiberGroup('L_posteriorArcuate_vot');
 R_VOF      = dtiNewFiberGroup('R_VOF');
 R_pArc_vot = dtiNewFiberGroup('R_posteriorArcuate_vot');
 
-[L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = wma_find_vertical_fibers(wholebrainfgPath,fsROIdir,outdir,thresh,v_crit);
+[L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = wma_find_vertical_fibers(wholebrainfgPath,fsROIdir,thresh,v_crit);
 
 
 %% Separate VOF from arcuate
