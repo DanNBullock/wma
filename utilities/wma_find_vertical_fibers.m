@@ -1,4 +1,4 @@
-function [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = wma_find_vertical_fibers(fg,fsDir,outdir,thresh, v_crit, minLength)
+function [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = wma_find_vertical_fibers(fg,fsDir)
 % Find vertically oriented fibers projecting to VOT
 %
 % [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = AFQ_FindVerticalFibers(fgPath,fsROIdir,outdir,thresh,v_crit, minLength)
