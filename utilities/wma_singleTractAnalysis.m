@@ -55,8 +55,14 @@ tractStats.vl=vl;
     tractStats.morph.streamLengths]=wma_singleTractStatQuantification(WBFG,posIndicies);
 
 %% Tract Profiles
-%doesn't work right now?
-[tractStats.diffusion.fa, tractStats.diffusionmd, tractStats.diffusion.rd,...
+if length(posIndicies)>5
+[tractStats.diffusion.fa, tractStats.diffusion.md, tractStats.diffusion.rd,...
     tractStats.diffusion.ad]=wma_singleTractProfile(posIndicies,WBFG,dt6);
+else
+    tractStats.diffusion.fa=[];
+    tractStats.diffusion.md=[];
+    tractStats.diffusion.rd=[];
+    tractStats.diffusion.ad=[];
+end
 
 end
