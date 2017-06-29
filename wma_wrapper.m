@@ -81,7 +81,7 @@ classification.index(L_TPC_Indexes)=25;
 classification.index(R_TPC_Indexes)=26;
 
 % Segment the Vertical Occipital Fasiculus (VOF)
-[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  wma_segment_vof(wbFG, fsDIR, classification, dtiFile) 
+[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  wma_segment_vof(wbFG, fsDIR, classification, dt6) 
 
 classification.index(L_VOF_Indexes)=21;
 classification.index(R_VOF_Indexes)=22;
@@ -93,10 +93,10 @@ classification.index(R_VOF_Indexes)=22;
 classification.index(LeftMdLFindexes)=27;
 classification.index(RightMdLFindexes)=28;
 
-for itracts=1:length(classification.names)
-    spaceIndices=strfind(classification.names{itracts},' ');
-    classification.names{itracts}(spaceIndices)='_';
-end
+%for itracts=1:length(classification.names)
+%    spaceIndices=strfind(classification.names{itracts},' ');
+%    classification.names{itracts}(spaceIndices)='_';
+%end
 
 disp('Tracts segmentation complete');
 
