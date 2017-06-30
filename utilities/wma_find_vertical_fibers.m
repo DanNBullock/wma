@@ -64,6 +64,7 @@ fasciles_long_indices      = L > minLength; %#ok<*NASGU>
 fascicles_anterior_indices = ac < antBoundary;%was done in terms of length instead of antBoundary
 fascicles_indices          = and(fasciles_long_indices, fascicles_anterior_indices );
 fascicles_identities       = find(fascicles_indices);
+fg.fibers                  = fg.fibers(fascicles_indices);
 
 %% Find all vertical fibers projecting to VOT
 % Intersect fibers with ROI
