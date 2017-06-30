@@ -36,6 +36,7 @@ classificationCut= removeOutliersClassification(classificationRAW,fe, 4, 4, 1:20
 [~, results]= bsc_feAndAFQqualityCheck(fe, classificationCut);
 
 results.AFQstats.tractStats=tractStats;
+classificationCut=wma_clearNonvalidClassifications(classificationCut,fe);
 results.AFQstats.classification=classificationCut;
 
 segTime=toc;
