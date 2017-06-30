@@ -227,7 +227,7 @@ if ~notDefined('classification')
     
     %% standard Life Plots
     % Plot comparing pre and post life streamline counts by length
-    subplot(2,3,1)
+    subplot(3,3,1)
     hold on
     plot ((11:220),WBFGhist,'b', 'LineWidth',1.25)
     plot ((11:220),validHist,'r', 'LineWidth',1.25)
@@ -237,7 +237,7 @@ if ~notDefined('classification')
     ylabel('Streamline Count')
     
     % Plot comparing normalized pre and post life streamline counts by length
-    subplot(2,3,2)
+    subplot(3,3,2)
     hold on
     plot ((11:220),WBFGhist/results.LiFEstats.WBFG.stream_count,'b', 'LineWidth',1.25)
     plot ((11:220),validHist/results.LiFEstats.validated.stream_count,'r', 'LineWidth',1.25)
@@ -248,17 +248,19 @@ if ~notDefined('classification')
     
     % Plot illustrating the bias in the validated streamlines as assocaited
     % with length
-    subplot(2,3,3)
-    plot ((11:220),((WBFGhist/results.LiFEstats.WBFG.stream_count)-(validHist/results.LiFEstats.validated.stream_count)),'g', 'LineWidth',1.25)
+    subplot(3,3,3)
+    hold on
+    plot ((11:220),((WBFGhist/results.LiFEstats.WBFG.stream_count)-(validHist/results.LiFEstats.validated.stream_count))*10000,'g', 'LineWidth',1.25)
+    plot ((11:220),(zeros(1,210))*10000,'r', 'LineWidth',1.25)
     title('Validation Bias Relative to Streamline Length')
-    ylim([-.0175,.01])
-    legend('WBFG ratio - Validated ratio')
+    ylim([-25,15])
+    legend('WBFG ratio - Validated ratio','No Bias')
     xlabel('Streamline Length (mm)')
-    ylabel('Validation bias')
+    ylabel('Validation bias (%)')
     
     %% Plots Specific to AFQ Output
     % Plot comparing pre and post life streamline counts by length
-    subplot(2,3,4)
+    subplot(3,3,5)
     hold on
     plot ((11:220),WBFGclassHist,'b', 'LineWidth',1.25)
     plot ((11:220),validClassHist,'r', 'LineWidth',1.25)
@@ -268,7 +270,7 @@ if ~notDefined('classification')
     ylabel('Streamline Count')
     
     % Plot comparing normalized pre and post life streamline counts by length
-    subplot(2,3,5)
+    subplot(3,3,6)
     hold on
     
     %plot ((11:220),WBFGclassHist/results.AFQstats.WBFG.classified_stream_count,'b', 'LineWidth',1.25)
@@ -281,23 +283,65 @@ if ~notDefined('classification')
     xlabel('Streamline Length (mm)')
     ylabel('Proportion of Whole Brain Streamlines Classified (%)')
     
-    % Plot illustrating the bias in the validated streamlines as assocaited
-    % with length
-    if ~life2afqFlag
-        % Computation gets unweildy, so here we use an intermediary variable
-        computeVec=((WBFGclassHist/results.AFQstats.WBFG.classified_stream_count)-(validClassHist/results.AFQstats.validated.classified_stream_count))-...
-            ((WBFGhist/results.LiFEstats.WBFG.stream_count)- (validHist/results.LiFEstats.validated.stream_count));
-        
-        subplot(2,3,6)
-        hold on
-        plot ((11:220),((WBFGclassHist/results.AFQstats.WBFG.classified_stream_count)-(validClassHist/results.AFQstats.validated.classified_stream_count)),'g', 'LineWidth',1.25)
-        plot ((11:220),computeVec,'c', 'LineWidth',1.25)
-        title('Validation bias relative to streamline length and specificity to AFQ classification')
-        ylim([-.0175,.01])
-        legend('WBFG ratio - Validated ratio, AFQ classified - General','WBFG ratio - Validated ratio, AFQ classified - Specific')
-        xlabel('Streamline Length (mm)')
-        ylabel('VAlidation bias')
+%     % Plot illustrating the bias in the validated streamlines as assocaited
+%     % with length
+%     if ~life2afqFlag
+%         % Computation gets unweildy, so here we use an intermediary variable
+%         computeVec=((WBFGclassHist/results.AFQstats.WBFG.classified_stream_count)-(validClassHist/results.AFQstats.validated.classified_stream_count))-...
+%             ((WBFGhist/results.LiFEstats.WBFG.stream_count)- (validHist/results.LiFEstats.validated.stream_count));
+%         
+%         subplot(2,3,6)
+%         hold on
+%         plot ((11:220),((WBFGclassHist/results.AFQstats.WBFG.classified_stream_count)-(validClassHist/results.AFQstats.validated.classified_stream_count)),'g', 'LineWidth',1.25)
+%         plot ((11:220),computeVec,'c', 'LineWidth',1.25)
+%         title('Validation bias relative to streamline length and specificity to AFQ classification')
+%         ylim([-.0175,.01])
+%         legend('WBFG ratio - Validated ratio, AFQ classified - General','WBFG ratio - Validated ratio, AFQ classified - Specific')
+%         xlabel('Streamline Length (mm)')
+%         ylabel('VAlidation bias')
+%     end
+cumValid=zeros(1,length(validHist));
+cumWBFG=cumValid;
+for ilengths=5:length(validHist)
+cumValid(ilengths)=(validHist(ilengths)/results.LiFEstats.validated.stream_count)+sum(cumValid(ilengths-1));
+cumWBFG(ilengths)= (WBFGhist(ilengths)/results.LiFEstats.WBFG.stream_count)+sum(cumWBFG(ilengths-1));
+end
+
+    subplot(3,3,4)
+    hold on
+    plot ((11:220),cumWBFG,'b', 'LineWidth',1.25)
+    plot ((11:220),cumValid,'r', 'LineWidth',1.25)
+    title('Cumulative portion of fibers in connectome, by length')
+    legend('WBFG','Validated')
+    xlabel('Streamline Length (mm)')
+    ylabel('Portion of tracts less than or equal to length')
+
+    
+    %computation for afq bar plot
+        tractNames=classification.names;
+    for itracts=1:length(tractNames)
+        tractProportion(itracts)=length(find(classification.index==itracts))/length(classification.index);
     end
+    
+    plotInput(1,:)=tractProportion(1:2:end);
+    plotInput(2,:)=tractProportion(2:2:end);
+    
+    for ilabels=1:length(tractNames)/2
+        curName=tractNames{ilabels*2};
+        spaceindexes=strfind(curName,' ');
+        labelNames{ilabels}=curName(spaceindexes(1)+1:end);
+    end
+    
+    subplot(3,3,[7,8,9])
+    hold on
+    bar((plotInput')*100)
+    title('Proportion of connectome streamlines in tract')
+    legend('Left','Right')
+    xlabel('Tract')
+    ylabel('% classificaiton input streamlines in tract (%)')
+    
+    set(gca,'xtick',1:1:length(labelNames))
+    set(gca,'XTickLabel',labelNames, 'FontSize',8,'FontName','Times')
     
 else
     %% standard Life Plots
