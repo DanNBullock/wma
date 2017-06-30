@@ -67,7 +67,7 @@ segmentTime=toc;
 fprintf ('\n Mori Atlas segmentation run complete in %4.2f hours \n', segmentTime/(60*60))
 
 % update name field
-newTractNames={'L_VOF','R_VOF','L_pArc','R_pArc','L_TPC','R_TPC','L_MdLF','R_MdLF'};
+newTractNames={'Left VOF','Right VOF','Left pArc','Right pArc','Left TPC','Right TPC','Left MdLF','Right MdLF'};
 for iNEWtracts=21:28
    classification.names{iNEWtracts}=newTractNames{iNEWtracts-20};
 end
