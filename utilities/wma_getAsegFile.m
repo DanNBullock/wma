@@ -25,7 +25,9 @@ end
 if ~exist(strcat(fsDir,'/mri/',asegName,'.nii.gz'),'file')
     %apaprently necessary for matlab?
     spaceChar={' '};
-    [status result] = system(strcat('mri_convert',spaceChar,fsDir,'/mri/aparc.',asegName,'.mgz',spaceChar, fsDir, '/mri/',asegName,'.nii.gz'));
+    cmndString=strcat('mri_convert',spaceChar,fsDir,'/mri/aparc.',asegName,'.mgz',spaceChar, fsDir, '/mri/',asegName,'.nii.gz');
+
+    [status result] = system(cmndString{1});
     if status~=0
         error('/n Error generating aseg nifti file.  There may be a problem finding the .mgz file.  Ensure mri_convert is loaded.')
     end
