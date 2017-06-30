@@ -1,4 +1,4 @@
-function [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = wma_find_vertical_fibers(fg,fsDir)
+function [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = AFQ_FindVerticalFibers(fgPath,fsDir,outdir,thresh, v_crit, minLength)
 % Find vertically oriented fibers projecting to VOT
 %
 % [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fascicles_identities] = AFQ_FindVerticalFibers(fgPath,fsROIdir,outdir,thresh,v_crit, minLength)
@@ -9,54 +9,72 @@ function [L_fg_vert, R_fg_vert, L_vertical_fascicles_identities, R_vertical_fasc
 %             This will be segmented
 % fsROIdir  - path to THIS SUBJECT'S fs directory
 % outdir    - Directory to save output
-% thresh    - 
-% v_crit    - 
-% minLength - minimum distance between ROIs and fascicles
+% thresh
+% v_crit
+% minLength
 % 
-% Intiial version of code by Jason D. Yeatman, September 2014. 
-%
-% Code released with:
+% Copyright Jason D. Yeatman, September 2014. Code released with:
 % Yeatman J.D., Weiner K.S., Pestilli F., Rokem A., Mezer A., Wandell B.A.
 % (2014). The vertical occipital fasciculus: A forgotten highway. PNAS.
-%
-% Modified by Daniel Bullock 2017, Indiana University
+% Modified by DNB 2017, Bloomington Indiana
 
 %% Set parameters
 
 % Remove any fiber that doesn't go vertical (positive z) for thresh% of its
 % coordinates
-
+if notDefined('thresh')
     thresh = [.95 .6];
-
+end
 % Fibers must travel this much farther vertically than other directions
-
+if notDefined('v_crit')
     v_crit = 1.3;
-
+end
 % Minumum length
-
+if notDefined('minLength')
     minLength = 20;
-
+end
 %% Set paths and load fibers
-
+if notDefined('antBoundary')
     antBoundary = -15;
-
+end
 roi_names = {'fusiform.mat' 'inferiortemporal.mat'...
     'lateraloccipital.mat'}; %'middletemporal.mat'
+% Path to ROIs
+if notDefined('fsDir')
+    fsROIdir = uigetdir([],'Select the appropriate FreeSurfer subject directory');
+end
 
-%% Create VOT roi from freesurfer ROIs
-% We select a few FreeSurfer ROIs from the segmentation.
-% Left Hemisphere Rois -> [1007,1009,1011]
-% Right Hemisphere Rois -> [2007,2009,2011]
-[L_roi_all] = wma_roiFromFSnums(fsDir,[1007,1009,1011]);
-[R_roi_all] = wma_roiFromFSnums(fsDir,[2007,2009,2011]);
+% Path to fibers
+if notDefined('fgPath')
+    [fname,pname]=uigetfile('*','Select Fiber Group',[],'MultiSelect','on');
+    if iscell(fname)
+        for ii=1:length(fname)
+            fgPath{ii} = fullfile(pname{ii},fname{ii});
+        end
+    else
+        fgPath = fullfile(pname,fname);
+    end
+end
+% output directory
+if notDefined('outdir')
+    outdir = uigetdir([],'Select an output directory');
+end
 
-% set names
-L_roi_all.name = 'LVOT';
-R_roi_all.name = 'RVOT';
-
+% Load fibers. If there are multiple fiber groups merge them into 1
+if iscell(fgPath)
+    fg = fgRead(fgPath{1});
+    for ii = 2:length(fgPath)
+        % Load and merge each fiber group
+        fgtmp = fgRead(fgPath{ii});
+        fg = dtiMergeFiberGroups(fg,fgtmp);
+    end
+elseif ischar(fgPath)
+    fg = fgRead(fgPath);
+elseif isstruct(fgPath);
+    fg = fgPath;
+end
+%% NOTHING ABOVE HERE MODIFIED
 % Remove fibers that are less than 2cm
-% theoretically not necessary because none of the input fibers are less
-% than 10 mm.
 % CHECK CHECK CHECK
 L  = cellfun(@(x) length(x),fg.fibers);
 ac = cellfun(@(x) max(x(2,:)),fg.fibers);
@@ -66,7 +84,20 @@ fascicles_indices          = and(fasciles_long_indices, fascicles_anterior_indic
 fascicles_identities       = find(fascicles_indices);
 fg.fibers                  = fg.fibers(fascicles_indices);
 
+%% Create VOT roi from freesurfer ROIs
+% modified by DNB 05/2017
+% Load ROIs and merge into 1 file
+
+[L_roi_all] =bsc_roiFromFSnums(fsDir,[1007,1009,1011]);
+
+[R_roi_all] =bsc_roiFromFSnums(fsDir,[2007,2009,2011]);
+
+% set names
+L_roi_all.name = 'LVOT';
+R_roi_all.name = 'RVOT';
+
 %% Find all vertical fibers projecting to VOT
+
 % Intersect fibers with ROI
 [L_fg, ~, L_vertical_fascicles_indices] = dtiIntersectFibersWithRoi([],{'and' 'endpoints'},4,L_roi_all,fg);
 L_vertical_fascicles_identities         = fascicles_identities(L_vertical_fascicles_indices);
@@ -103,6 +134,8 @@ f_dirR = cellfun(@(x) x > 0,f_diffR, 'uniformoutput',0);
 
 L_fg_vert = dtiNewFiberGroup('L_vertical');
 R_fg_vert = dtiNewFiberGroup('R_vertical');
+
+% % FIX FIX FIX %%%
 
 
 for ii = 1:length(L_fg.fibers)
@@ -142,7 +175,46 @@ for ii = 1:length(R_fg.fibers)
     end
 end
 
+
+
 L_vertical_fascicles_identities = L_vertical_fascicles_identities( (L_vertical_fascicles_identities~=0) );
 R_vertical_fascicles_identities = R_vertical_fascicles_identities( (R_vertical_fascicles_identities~=0) );
 
-return
+%% Save fibers
+if length(L_fg_vert.fibers) > 10
+    dtiWriteFiberGroup(L_fg_vert,fullfile(outdir,'Left_VerticalFG')); L = 1;
+else
+    L = 0;
+end
+if length(R_fg_vert.fibers) > 10
+    dtiWriteFiberGroup(R_fg_vert,fullfile(outdir,'Right_VerticalFG')); R = 1;
+else
+    R = 0;
+end
+% %% Cluster fibers and render fiber groups
+% if L == 1
+%     cmdL = sprintf('dipy_quickbundles --dist_thr 35 --pts 25 %s',fullfile(outdir,'Left_VerticalFG.mat'));
+%     system(cmdL);
+%     L_fg_clust = fgRead(fullfile(outdir,'Left_VerticalFG_cluster.mat'));
+%     c = jet(length(L_fg_clust));
+%     AFQ_RenderFibers(L_fg_clust(1),'numfibers',100,'color',c(1,:));
+%     for ii = 2:length(L_fg_clust)
+%         AFQ_RenderFibers(L_fg_clust(ii),'numfibers',100,'color',c(ii,:),'newfig',0);
+%     end
+%     axis image
+% else
+%     L_fg_clust = L_fg_vert;
+% end
+% if R == 1
+%     cmdR = sprintf('dipy_quickbundles --dist_thr 35 --pts 25 %s',fullfile(outdir,'Right_VerticalFG.mat'));
+%     system(cmdR);
+%     R_fg_clust = fgRead(fullfile(outdir,'Right_VerticalFG_cluster.mat'));
+%     c = jet(length(R_fg_clust));
+%     AFQ_RenderFibers(R_fg_clust(1),'numfibers',100,'color',c(1,:),'camera','rightsag');
+%     for ii = 2:length(R_fg_clust)
+%         AFQ_RenderFibers(R_fg_clust(ii),'numfibers',100,'color',c(ii,:),'newfig',0);
+%     end
+%     axis image
+% else
+%     R_fg_clust = R_fg_vert;
+% end
