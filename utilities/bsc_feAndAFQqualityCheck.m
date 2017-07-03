@@ -253,7 +253,7 @@ if ~notDefined('classification')
     plot ((11:220),((WBFGhist/results.LiFEstats.WBFG.stream_count)-(validHist/results.LiFEstats.validated.stream_count))*10000,'g', 'LineWidth',1.25)
     plot ((11:220),(zeros(1,210))*10000,'r', 'LineWidth',1.25)
     title('Validation Bias Relative to Streamline Length')
-    ylim([-25,15])
+    ylim([-40,30])
     legend('WBFG ratio - Validated ratio','No Bias')
     xlabel('Streamline Length (mm)')
     ylabel('Validation bias (%)')
@@ -339,7 +339,7 @@ end
     legend('Left','Right')
     xlabel('Tract')
     ylabel('% classificaiton input streamlines in tract (%)')
-    
+    ylim([-0 2])
     set(gca,'xtick',1:1:length(labelNames))
     set(gca,'XTickLabel',labelNames, 'FontSize',8,'FontName','Times')
     
