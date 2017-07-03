@@ -25,7 +25,7 @@ end
 if ~exist(strcat(fsDir,'/mri/',asegName,'.nii.gz'),'file')
     %apaprently necessary for matlab?
     spaceChar={' '};
-    cmndString=strcat('mri_convert',spaceChar,fsDir,'/mri/aparc.',asegName,'.mgz',spaceChar, fsDir, '/mri/',asegName,'.nii.gz');
+    cmndString=strcat('mri_convert',spaceChar,fsDir,'/mri/',asegName,'.mgz',spaceChar, fsDir, '/mri/',asegName,'.nii.gz');
 
     [status result] = system(cmndString{1});
     if status~=0
