@@ -32,9 +32,8 @@ function [tractStats] = wma_singleTractAnalysis(indices,fe,WBFG,dt6)
 % (C) Daniel Bullock, 2017, Indiana University
 %% preliminaries
 
-% loads file if a string was passed 
-% no similar option for wbfg
-
+% conditional to prevent empty indicies from causing problems
+if ~isempty(indicies) 
 
 %% virtual lesion
 %if it is a fe structure, get the wbFG out of it
@@ -42,6 +41,7 @@ if ~notDefined('fe')&&~isempty(fe)
         [vl] =wma_singleVirtualLesion(fe,indices);
         
         posIndicies=indices(ismember(indices,(find(fe.life.fit.weights>0))));
+
     else
         fprintf('\n fe structure not detected, will not run virtual lesion \n')
 
@@ -64,5 +64,7 @@ else
     tractStats.diffusion.rd=[];
     tractStats.diffusion.ad=[];
 end
-
+else
+    tractStats=[];
+end
 end
