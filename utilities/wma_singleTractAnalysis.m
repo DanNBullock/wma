@@ -30,7 +30,7 @@ function [tractStats] = wma_singleTractAnalysis(indices,fe,WBFG,dt6)
 %  details.
 %
 % conditional to prevent emptys from making it far
-if ~isempty(indicies) 
+if ~isempty(indices) 
 
 %% virtual lesion
 %if it is a fe structure, get the wbFG out of it
