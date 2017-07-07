@@ -29,10 +29,7 @@ function [tractStats] = wma_singleTractAnalysis(indices,fe,WBFG,dt6)
 %  bsc_multiTractProfilesFE.  See those respective functions for more
 %  details.
 %
-% (C) Daniel Bullock, 2017, Indiana University
-%% preliminaries
-
-% conditional to prevent empty indicies from causing problems
+% conditional to prevent emptys from making it far
 if ~isempty(indicies) 
 
 %% virtual lesion
@@ -49,20 +46,24 @@ end
 tractStats.vl=vl;
 
 %% Quantative Stats
-
-[tractStats.morph.meanLength, tractStats.morph.lengthSTDEV, tractStats.morph.totalLength,...
-    tractStats.morph.streamCount, tractStats.morph.volume,...
-    tractStats.morph.streamLengths]=wma_singleTractStatQuantification(WBFG,posIndicies);
-
-%% Tract Profiles
-if length(posIndicies)>5
-[tractStats.diffusion.fa, tractStats.diffusion.md, tractStats.diffusion.rd,...
-    tractStats.diffusion.ad]=wma_singleTractProfile(posIndicies,WBFG,dt6);
+if ~isempty(posIndicies)
+    [tractStats.morph.meanLength, tractStats.morph.lengthSTDEV, tractStats.morph.totalLength,...
+        tractStats.morph.streamCount, tractStats.morph.volume,...
+        tractStats.morph.streamLengths]=wma_singleTractStatQuantification(WBFG,posIndicies);
+    
+    %% Tract Profiles
+    %doesn't work right now?
+    if length(posIndicies)>5
+        [tractStats.diffusion.fa, tractStats.diffusion.md, tractStats.diffusion.rd,...
+            tractStats.diffusion.ad]=wma_singleTractProfile(posIndicies,WBFG,dt6);
+    else
+        tractStats.diffusion.fa=[];
+        tractStats.diffusion.md=[];
+        tractStats.diffusion.rd=[];
+        tractStats.diffusion.ad=[];
+    end
 else
-    tractStats.diffusion.fa=[];
-    tractStats.diffusion.md=[];
-    tractStats.diffusion.rd=[];
-    tractStats.diffusion.ad=[];
+    tractStats=[] ;
 end
 else
     tractStats=[];
