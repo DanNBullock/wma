@@ -24,10 +24,13 @@ function [vl] =wma_singleVirtualLesion(fe,indices)
 
 %% Virtual lesion
 
+if length(indices)>4)
 [ vl.rmse_wVL, vl.rmse_woVL, vl.nFib_tract, vl.nFib_PN, vl.nVoxels ] = feComputeVirtualLesion(fe, indices);
 % feVirtualLesion for plots
 fevl = feComputeEvidence(vl.rmse_woVL, vl.rmse_wVL);
 vl.evidence=fevl;
+else
+vl=[]
 
 % why even bother with this?
 end
