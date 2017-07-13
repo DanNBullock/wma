@@ -40,7 +40,7 @@ if ischar(feORwbfg)
             fprintf('\n streamlines extracted to wbfg in acpc coordspace \n')
             fe=curVar;
         elseif isfield(curVar,'fibers')
-            fprintf('\n fg structure loaded.  \n fg structure is in %s coordpace \n', curvar.coordspace)
+            fprintf('\n fg structure loaded.  \n fg structure is in %s coordpace \n', curVar.coordspace)
             wbFG = curVar;
             fe=[];
         end
@@ -53,7 +53,7 @@ elseif isstruct(feORwbfg)
         wbFG = feGet(feORwbfg, 'fibers acpc');
         fe=feORwbfg;
     elseif isfield(feORwbfg,'fibers')
-        fprintf('\n fg structure loaded.  \n fg structure is in %s coordpace \n', curvar.coordspace)
+        fprintf('\n fg structure loaded.  \n fg structure is in %s coordpace \n', curVar.coordspace)
         wbFG = feORwbfg;
         fe=[];
     end
