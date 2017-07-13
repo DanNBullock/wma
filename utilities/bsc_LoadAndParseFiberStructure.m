@@ -53,7 +53,7 @@ elseif isstruct(feORwbfg)
         wbFG = feGet(feORwbfg, 'fibers acpc');
         fe=feORwbfg;
     elseif isfield(feORwbfg,'fibers')
-        fprintf('\n fg structure loaded.  \n fg structure is in %s coordpace \n', curVar.coordspace)
+        fprintf('\n fg structure loaded.  \n fg structure is in %s coordpace \n', wbFG.coordspace)
         wbFG = feORwbfg;
         fe=[];
     end
