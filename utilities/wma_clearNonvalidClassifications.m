@@ -39,7 +39,10 @@ if length(classification.index)~=length(fe.fg.fibers)
 end
 
 %% set nonvalidated classifications to 0
-invalidIndicies=find(fe.life.fit.weights>0);
+validIndices=find(fe.life.fit.weights>0);
+
+blankIndex=1:length(fe.life.fit.weights);
+invalidIndices=setdiff(validIndices,blankIndex);
 
 classification.index(invalidIndicies)=0;
 end
