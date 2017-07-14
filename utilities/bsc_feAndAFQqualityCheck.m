@@ -156,7 +156,7 @@ if ~notDefined('classification')
         results.AFQstats.validated.classified_stream_count=length(find(classification.index));
         % Divides the AFQ classification count by the total WBFG streamline
         % count to get the proportion of streamlines classified by AFQ
-        results.AFQstats.validated.classified_stream_proportion=results.AFQstats.validated.classified_streams_count/results.LiFEstats.WBFG.stream_count;
+        results.AFQstats.validated.classified_stream_proportion=results.AFQstats.validated.classified_stream_count/results.LiFEstats.WBFG.stream_count;
         % NOTE: these streamlines are both AFQ classified AND LiFE validated
         
         results.AFQstats.validated.classified_stream_avg_length=mean(wbFG_streamLengths(AFQIndexVec));
