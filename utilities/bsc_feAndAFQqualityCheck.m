@@ -159,6 +159,11 @@ if ~notDefined('classification')
         results.AFQstats.validated.classified_stream_proportion=results.AFQstats.validated.classified_stream_count/results.LiFEstats.WBFG.stream_count;
         % NOTE: these streamlines are both AFQ classified AND LiFE validated
         
+        % in theory this is unnecessary, as this vector should just be
+        % every streamline. i.e. each member of AFQIndexVec is a member of
+        % PosIndexes
+        survivorVec=AFQIndexVec(ismember(AFQIndexVec,posIndexes));
+        
         results.AFQstats.validated.classified_stream_avg_length=mean(wbFG_streamLengths(AFQIndexVec));
         results.AFQstats.validated.classified_stream_length_stdev=std(wbFG_streamLengths(AFQIndexVec));
         
