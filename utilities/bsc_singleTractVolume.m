@@ -4,7 +4,7 @@ if notDefined('thresholdPercent')
 thresholdPercent = 20;
 end
 
-if notDefined('smoothKernel')
+if smoothBool && notDefined ('smoothKernel')
 smoothKernel     = [3 3 3];
 end
 
