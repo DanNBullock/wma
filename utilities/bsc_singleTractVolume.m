@@ -25,9 +25,23 @@ absoluteyMin=min(minY);
 absolutezMin=min(minZ);
 
 %establish offset necessary to make all coordinates positive and thus indexable (with a 5 mm window)
+if absolutexMin<0 
 xOffset=abs(absolutexMin)+smoothKernel(1)+5;
+else
+xOffset=-abs(absolutexMin)+smoothKernel(1)+5;
+end
+
+if absoluteyMin<0 
 yOffset=abs(absoluteyMin)+smoothKernel(2)+5;
+else
+yOffset=-abs(absoluteyMin)+smoothKernel(2)+5;
+end
+
+if absolutezMin<0 
 zOffset=abs(absolutezMin)+smoothKernel(3)+5;
+else
+zOffset=-abs(absolutezMin)+smoothKernel(3)+5;
+end
 
 %change the units of the smoothingKernel to the resized voxel units
 smoothKernelResize=smoothKernel/voxelResize;
