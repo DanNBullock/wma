@@ -1,57 +1,88 @@
-function fiberBoolNifti=bsc_singleTractVolume(fg,t1)
+function fiberBoolNifti=bsc_singleTractVolume(fg,thresholdPercent,smoothBool,smoothKernel,voxelResize)
 
-
+if notDefined('thresholdPercent')
 thresholdPercent = 20;
-%islandFlag       = false;
-smoothKernel     = [3 3 3];
-voxelResize = config.voxelResize;
-
-for ifibers=1:length(fg.fibers)
-    fg.fibers{ifibers}=mrAnatXformCoords(t1.qto_ijk, fg.fibers{ifibers})';
-    
 end
 
-    fiberBoolNifti = t1;
-    imgDim         = t1.dim(1:3);
-    imgRes         = t1.pixdim(1,1);
-    imgResize      = imgDim*imgRes;
-    imgBins        = ceil(imgResize/voxelResize);
-    emptyMatrix    = zeros(imgBins);
+if notDefined('smoothKernel')
+smoothKernel     = [3 3 3];
+end
+
+if notDefined('voxelResize')
+voxelResize = 1;
+end
+
+%finding the minimum node coordinate for each streamline for each dimension
+for ifibers=1:length(fg.fibers)
+    minX(ifibers)=min(fg.fibers{ifibers},1);
+    minY(ifibers)=min(fg.fibers{ifibers},2);
+    minZ(ifibers)=min(fg.fibers{ifibers},3); 
+end
+
+%find absolute minimum value for entire FG for reach dimensiuon
+absolutexMin=min(minX);
+absoluteyMin=min(minY);
+absolutezMin=min(minZ);
+
+%establish offset necessary to make all coordinates positive and thus indexable (with a 5 mm window)
+xOffset=abs(absolutexMin)+smoothKernel(1)+5;
+yOffset=abs(absoluteyMin)+smoothKernel(2)+5;
+zOffset=abs(absolutezMin)+smoothKernel(3)+5;
+
+%change the units of the smoothingKernel to the resized voxel units
+smoothKernelResize=smoothKernel/voxelResize;
+
+%round it to the nearest odd number
+smoothKernelResize=2.*round((smoothKernelResize+1)./2)-1;
+
+% chagne the coordinate scheme of the fg streamlines to positive only.
+for ifibers=1:length(fg.fibers)
+    fg.fibers{ifibers}(1,:)=fg.fibers{ifibers}(1,:)+xOffset;
+    fg.fibers{ifibers}(2,:)=fg.fibers{ifibers}(2,:)+yOffset;
+    fg.fibers{ifibers}(3,:)=fg.fibers{ifibers}(3,:)+zOffset;
+end
+
+%resize the streamlines to the coordinate scheme desired and find the bounding box coordinates
+for ifibers=1:length(fg.fibers)
+    fgResize.fibers{ifibers}=fg.fibers{ifibers}./voxelResize;
+    
+    resizeMinX(ifibers)=min(fgResize.fibers{ifibers},1);
+    resizeMinY(ifibers)=min(fgResize.fibers{ifibers},2);
+    resizeMinZ(ifibers)=min(fgResize.fibers{ifibers},3); 
+    
+    resizeMaxX(ifibers)=max(fgResize.fibers{ifibers},1);
+    resizeMaxY(ifibers)=max(fgResize.fibers{ifibers},2);
+    resizeMaxZ(ifibers)=max(fgResize.fibers{ifibers},3); 
+end
+
+%not useful
+absolutexResizeMin=min(resizeMinX);
+absoluteyResizeMin=min(resizeMinY);
+absolutezResizeMin=min(resizeMinZ);
+
+%find the max coords of the bounding box
+absolutexResizeMax=max(resizeMaxX);
+absoluteyResizeMax=max(resizeMaxY);
+absolutezResizeMax=max(resizeMaxZ);
+
+%create a matrix to hold a count of the endpoints in particular resized voxels
+FiberVolume=zeros(floor(absolutexResizeMax),floor(absoluteyResizeMax),floor(absolutezResizeMax))
+
+%go through each node for each streamline and count the number of nodes in each of the resized voxels
+for ifibers=1:length(fgResize.fibers)
+    for iNodes=1:length(fgResize.fibers{ifibers})
+    %make sure this is going by columns
+    coordinates=floor(fgResize.fibers{ifibers}(:,iNodes));
+    FiberVolume(coordinates)=FiberVolume(coordinates)+1;
+    end   
+end
 
 
-
-    % adjusts nifti object field information (probably not necessary)
-    fiberBoolNifti.dim       = imgBins;
-    fiberBoolNifti.pixdim    = [voxelResize voxelResize voxelResize];
-    fiberBoolNifti.qoffset_x = fiberBoolNifti.qoffset_x*(imgRes/voxelResize);
-    fiberBoolNifti.qoffset_y = fiberBoolNifti.qoffset_y*(imgRes/voxelResize);
-    fiberBoolNifti.qoffset_z = fiberBoolNifti.qoffset_z*(imgRes/voxelResize);
-
-
-% Here we begin counting nodes per (resized) voxel
-    for ifibers = 1:length(fg.fibers)
-        roundedExpandedTract = round(fg.fibers{ifibers}*(imgRes/voxelResize));
-        for inodes = 1:length(fg.fibers{ifibers})
-            emptyMatrix(  roundedExpandedTract(1,inodes), ...
-                          roundedExpandedTract(2,inodes), ...
-                          roundedExpandedTract(3,inodes))= ...
-            emptyMatrix(  roundedExpandedTract(1,inodes), ...
-                          roundedExpandedTract(2,inodes), ...
-                          roundedExpandedTract(3,inodes)) +1;
-        end
-    end
-
-
-    %% actually do smoothing if necessary
-    % smooths if necessary.  In theory de-islands as well, though I've never
-    % seen it in action.  It is set to go to keyboard if it detects islands.
-    % It could be that the function to detect islands is broken, so this may
-    % simply be pointless.
-    if config.smooth == 0
-        boolMatrixVersion   = emptyMatrix>config.threshold;
+ if smoothBool == 0
+        boolMatrixVersion   = FiberVolume>0;
         fiberBoolNifti.data = boolMatrixVersion;
     else
-        smoothData = smooth3(emptyMatrix,'gaussian',smoothKernel);
+        smoothData = smooth3(FiberVolume,'gaussian',smoothKernelResize);
         % auto threshold computation
         % computes the appropriate threshold for the given percentile value.
         % Probably not computationally efficient, but principled (aside from the
@@ -100,3 +131,7 @@ end
     fiberBoolNifti.data = uint8(fiberBoolNifti.data);
     
 end
+
+fiberBoolNifti.dim=size(fiberBoolNifti.data)
+fiberBoolNifti.pixdim=voxelResize
+
