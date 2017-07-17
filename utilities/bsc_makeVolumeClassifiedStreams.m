@@ -1,4 +1,4 @@
-function bsc_makeVolumeClassifiedStreams(wbFG, classification, t1, saveDir,subSelect)
+function bsc_makeVolumeClassifiedStreams(wbFG, classification, saveDir,subSelect)
 %
 %   bsc_plotClassifiedStreams(wbFG, classification, t1, view, saveDir,subSelect,colors)
 %
@@ -54,10 +54,6 @@ if ~isempty(fe)
     end
 end
 
-%loads t1 if a path is passed
-if ischar(t1)
-    t1= niftiRead(t1);
-end
 
 % if user does not pass in a subselection
 if notDefined('subSelect')
@@ -74,7 +70,7 @@ tractStruc = bsc_makeFGsFromClassification(classification, wbFG);
 % loops over the selected fibers and performs the volume generation
 for ifg=1:length(subSelect)
 
-    fiberBoolNifti=bsc_singleTractVolume(tractStruc(ifg).fg,t1);
+    fiberBoolNifti=bsc_singleTractVolume(fg,20,1,[5 5 5],.5);
     
     %sets file names appropriately
     boolSaveName=strcat(saveDir',fg.name, '_Vol.nii.gz');
