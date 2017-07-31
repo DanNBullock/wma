@@ -33,17 +33,7 @@ function [classification] = wma_wrapper(wbFG,dt6,fsDIR)
 %% Path generation and initialization
 
 % loads file if a string was passed 
-if ischar(wbFG)
-    wbFG = load(wbFG);
-    %if it is a fe structure, get the wbFG out of it
-    if isfield(wbFG, 'fe')
-        wbFG = feGet(wbFG.fe, 'fibers acpc');
-    end
-else
-    if isfield(wbFG, 'fg')
-        wbFG = feGet(wbFG, 'fibers acpc');
-    end
-end
+[wbFG, fe]=bsc_LoadAndParseFiberStructure(wbFG)
 
 if ischar(dt6)
     dt6 = dtiLoadDt6(dt6);
