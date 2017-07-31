@@ -36,8 +36,16 @@ classificationCut= removeOutliersClassification(classificationCut,fe, 4, 4, 21:3
 
 [~, results]= bsc_feAndAFQqualityCheck(fe, classificationCut);
 
-for iFibers=1:length(tractStats)
-    tractStats{1,iFibers}.morph.volumeProportion=tractStats{1,iFibers}.morph.volume/results.LiFEstats.validated.WMvolume;
+
+if exist(strcat(fsDIR,'/wm_mask.nii.gz'),'file')
+    wmMasknii=niftiRead(strcat(fsDIR,'/wm_mask.nii.gz'));
+    wmSize=sum(sum(sum(wmMasknii.data)));
+    
+    results.LiFEstats.WBFG.volume=wmSize;
+    
+    for iFibers=1:length(tractStats)
+        tractStats{1,iFibers}.morph.volumeProportion=tractStats{1,iFibers}.morph.volume/results.LiFEstats.WBFG.volume;
+    end
 end
 
 results.AFQstats.tractStats=tractStats;
@@ -46,3 +54,4 @@ results.AFQstats.classification=classificationCut;
 segTime=toc;
 fprintf('\n Segmentation and analysis for %s has taken %4.2f hours.', fe.name, segTime/(60*60))
 end
+
