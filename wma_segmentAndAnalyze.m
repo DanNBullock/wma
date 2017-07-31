@@ -16,7 +16,7 @@ function [results, classificationRAW]= wma_segmentAndAnalyze(fe,dt6,fsDIR)
 % Outputs:
 %
 % results: a summary structure containing information about both the
-% connectome and the segmented tracts.  
+% connectome and the segmented tracts.
 %%  preliminary loading
 %
 tic
@@ -26,21 +26,23 @@ if ischar(fe)
     %if it is a fe structure, get the wbFG out of it
 end
 
-[classificationRAW]=bsc_AFQseg_and_bloomtracks_v2(fe,dt6,fsDIR);
+[classificationRAW]=wma_wrapper(fe,dt6,fsDIR);
 
-% only pruning the origional afq tracts
-classificationCut= removeOutliersClassification(classificationRAW,fe, 4, 4, 1:20);
+% differential pruning of AFQ and WMA tracts
+classificationCut= removeOutliersClassification(classificationRAW,fe, 3, 3, 1:20);
+classificationCut= removeOutliersClassification(classificationCut,fe, 4, 4, 21:32);
 
 [tractStats] = wma_multiTractAnalysis(classificationCut,fe,dt6);
 
 [~, results]= bsc_feAndAFQqualityCheck(fe, classificationCut);
 
+for iFibers=1:length(tractStats)
+    tractStats{1,iFibers}.morph.volumeProportion=tractStats{1,iFibers}.morph.volume/results.LiFEstats.validated.WMvolume;
+end
+
 results.AFQstats.tractStats=tractStats;
 classificationCut=wma_clearNonvalidClassifications(classificationCut,fe);
 results.AFQstats.classification=classificationCut;
-
 segTime=toc;
 fprintf('\n Segmentation and analysis for %s has taken %4.2f hours.', fe.name, segTime/(60*60))
-
 end
-
