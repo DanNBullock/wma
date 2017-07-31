@@ -62,13 +62,13 @@ disp('Segmenting Major and Associative Tracts');
 
 % Segment the major white matter tracts in the Mori Atlas
 tic
-[classification] = wma_majortracts(dt6, wbFG);
+[classification] = wma_majortracts_v2(dt6, wbFG);
 segmentTime=toc;
 fprintf ('\n Mori Atlas segmentation run complete in %4.2f hours \n', segmentTime/(60*60))
 
 % update name field
-newTractNames={'Left VOF','Right VOF','Left pArc','Right pArc','Left TPC','Right TPC','Left MdLF','Right MdLF'};
-for iNEWtracts=21:28
+newTractNames={'Left VOF','Right VOF','Left pArc','Right pArc','Left TPC','Right TPC','Left MdLF','Right MdLF', 'Left Meyer', 'Right Meyer', 'Left Baum', 'Right Baum' };
+for iNEWtracts=21:32
    classification.names{iNEWtracts}=newTractNames{iNEWtracts-20};
 end
 
@@ -81,7 +81,7 @@ classification.index(L_TPC_Indexes)=25;
 classification.index(R_TPC_Indexes)=26;
 
 % Segment the Vertical Occipital Fasiculus (VOF)
-[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  wma_segment_vof(wbFG, fsDIR, classification, dt6) 
+[~, ~, L_VOF_Indexes, R_VOF_Indexes] =  wma_segment_vof(wbFG, fsDIR, classification, dt6); 
 
 classification.index(L_VOF_Indexes)=21;
 classification.index(R_VOF_Indexes)=22;
@@ -93,11 +93,18 @@ classification.index(R_VOF_Indexes)=22;
 classification.index(LeftMdLFindexes)=27;
 classification.index(RightMdLFindexes)=28;
 
-%for itracts=1:length(classification.names)
-%    spaceIndices=strfind(classification.names{itracts},' ');
-%    classification.names{itracts}(spaceIndices)='_';
-%end
+[~, RightMeyerInd, ~,RightBaumInd, ~, LeftMeyerInd, ~,LeftBaumInd] =bsc_opticRadiationSeg_V2(wbFG, fsDIR);
 
-disp('\n Streamline classification complete');
+classification.index(LeftMeyerInd)=29;
+classification.index(RightMeyerInd)=30;
+classification.index(LeftBaumInd)=31;
+classification.index(RightBaumInd)=32;
+
+% for itracts=1:length(classification.names)
+%     spaceIndices=strfind(classification.names{itracts},' ');
+%     classification.names{itracts}(spaceIndices)='_';
+% end
+
+disp('\n Tracts segmentation complete');
 
 return
