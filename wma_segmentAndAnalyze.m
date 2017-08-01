@@ -20,11 +20,8 @@ function [results, classificationRAW]= wma_segmentAndAnalyze(fe,dt6,fsDIR)
 %%  preliminary loading
 %
 tic
-if ischar(fe)
-    load(fe);
-    %haven't been able to test this with (path to wbFG passed in) yet.
-    %if it is a fe structure, get the wbFG out of it
-end
+
+[~, fe] = bsc_LoadAndParseFiberStructure(fe)
 
 [classificationRAW]=wma_wrapper(fe,dt6,fsDIR);
 
