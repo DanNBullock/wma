@@ -71,15 +71,20 @@ pos_fg.fibers=wbFG.fibers(posIndexes);
 
 
 %% resultStrucStuff
-% computes length of positively weighted streamlines
+% computes length  of positively weighted streamlines
+
 for istreamlines=1:length(pos_fg.fibers)
     pos_fg_streamLengths(istreamlines)=sum(sqrt(sum(diff(pos_fg.fibers{istreamlines},1,2).^2)));
+   
 end
 
-% Computes length of all streamlines
+
+% Computes length  of all streamlines
 for istreamlines=1:length(wbFG.fibers)
     wbFG_streamLengths(istreamlines)=sum(sqrt(sum(diff(wbFG.fibers{istreamlines},1,2).^2)));
+    
 end
+
 
 results.LiFEstats.fe_name=fe.name;
 
@@ -102,6 +107,10 @@ results.LiFEstats.RMSE.WB_norm_total=sum(allvoxelsErr(~isnan(allvoxelsErr)));
 results.LiFEstats.WBFG.length_total=sum(wbFG_streamLengths);
 results.LiFEstats.validated.streams_length_total=sum(pos_fg_streamLengths);
 results.LiFEstats.validated.WBFG_length_reduc_proportion=results.LiFEstats.validated.streams_length_total/results.LiFEstats.WBFG.length_total;
+
+%Volume Measures
+%results.LiFEstats.WBFG.WMvolume=length(wbFGVolVec);
+%results.LiFEstats.validated.WMvolume=length(posVolVec);
 
 % Computes total number of connectome streamlines and the number that are
 % validated by LiFE.  Computes the survivorship proportion.  Standard for
@@ -258,7 +267,7 @@ if ~notDefined('classification')
     plot ((11:220),((WBFGhist/results.LiFEstats.WBFG.stream_count)-(validHist/results.LiFEstats.validated.stream_count))*10000,'g', 'LineWidth',1.25)
     plot ((11:220),(zeros(1,210))*10000,'r', 'LineWidth',1.25)
     title('Validation Bias Relative to Streamline Length')
-    ylim([-40,30])
+    ylim([-40,25])
     legend('WBFG ratio - Validated ratio','No Bias')
     xlabel('Streamline Length (mm)')
     ylabel('Validation bias (%)')
@@ -348,6 +357,10 @@ end
     set(gca,'xtick',1:1:length(labelNames))
     set(gca,'XTickLabel',labelNames, 'FontSize',8,'FontName','Times')
     
+    %textual otputs (save for later)
+    
+    %text(.5,1.75)
+    
 else
     %% standard Life Plots
     % Plot comparing pre and post life streamline counts by length
@@ -390,3 +403,5 @@ if ~notDefined('saveDir')
 end
 
 end
+
+
