@@ -40,7 +40,6 @@ end
 % an fg containg all relecant streamlines
 for itracts=1:length(classification.names)
     tractStruc(itracts).name=classification.names{itracts};
-    tractStruc(itracts).fg = dtiNewFiberGroup(tractStruc(1).name);
-    tractStruc(itracts).fg.fibers=wbFG.fibers(classification.index==itracts);
+    tractStruc(itracts).fibers=wbFG.fibers(classification.index==itracts);
 end
 end
