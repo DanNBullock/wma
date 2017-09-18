@@ -22,18 +22,27 @@ switch asegOption
         asegName='aparc+aseg';
 end  
 
-if ~exist(strcat(fsDir,'/mri/',asegName,'.nii.gz'),'file')
+%if ~exist(strcat(fsDir,'/mri/',asegName,'.nii.gz'),'file')
     %apaprently necessary for matlab?
-    spaceChar={' '};
-    cmndString=strcat('mri_convert',spaceChar,fsDir,'/mri/',asegName,'.mgz',spaceChar, fsDir, '/mri/',asegName,'.nii.gz');
+%    spaceChar={' '};
+%    cmndString=strcat('mri_convert',spaceChar,fsDir,'/mri/',asegName,'.mgz',spaceChar, fsDir, '/mri/',asegName,'.nii.gz');
 
-    [status result] = system(cmndString{1});
-    if status~=0
-        error('/n Error generating aseg nifti file.  There may be a problem finding the .mgz file.  Ensure mri_convert is loaded.')
-    end
+%    [status result] = system(cmndString{1});
+%    if status~=0
+%        error('/n Error generating aseg nifti file.  There may be a problem finding the .mgz file.  Ensure mri_convert is loaded.')
+%    end
+%end
+
+spaceChar={' '};
+cmndString=strcat('mri_convert',spaceChar,fsDir,'/mri/',asegName,'.mgz',spaceChar, asegName,'.nii.gz');
+
+[status result] = system(cmndString{1});
+if status~=0
+    error('/n Error generating aseg nifti file.  There may be a problem finding the .mgz file.  Ensure mri_convert is loaded.')
 end
 
+
 %reads in label data
-asegFile=niftiRead(strcat(fsDir,'/mri/',asegName,'.nii.gz'));
+asegFile=niftiRead(strcat(asegName,'.nii.gz'));
 
 end
