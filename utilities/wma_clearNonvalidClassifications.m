@@ -44,5 +44,5 @@ validIndices=find(fe.life.fit.weights>0);
 blankIndex=1:length(fe.life.fit.weights);
 invalidIndices=setdiff(validIndices,blankIndex);
 
-classification.index(invalidIndicies)=0;
+classification.index(invalidIndices)=0;
 end
