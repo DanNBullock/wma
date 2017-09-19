@@ -155,7 +155,7 @@ for leftright= [1,2]
     %% segment
     
     %set operands for ROIS
-    operands={'and','and', 'and', 'and', 'not', 'not', 'not' };
+    operands={'endpoints','endpoints', 'and', 'and', 'not', 'not', 'not' };
     
     %switch for correct name
     if leftright == 2
@@ -168,7 +168,7 @@ for leftright= [1,2]
     currentROIs= [{mergedParietalROI} {mergedTemporalROI} {Plane1} {Plane2} {Plane3} {Plane4} {mergedNOTROI}];
     
     %actually segment
-    [fascicle, FiberBoolVec] = feSegmentFascicleFromConnectome(wbfg, currentROIs, operands, currentFascicleName);
+    [fascicle, FiberBoolVec] = wma_feSegmentFascicleFromConnectome(wbfg, currentROIs, operands, currentFascicleName);
     
     %obtain fiber indexes corresponding to the pArc + TPC amalgum
     FiberIndexes=find(FiberBoolVec);
