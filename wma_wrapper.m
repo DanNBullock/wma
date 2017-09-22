@@ -33,7 +33,17 @@ function [classification] = wma_wrapper(wbFG,dt6,fsDIR)
 %% Path generation and initialization
 
 % loads file if a string was passed 
-[wbFG, fe]=bsc_LoadAndParseFiberStructure(wbFG)
+if ischar(wbFG)
+    wbFG = load(wbFG);
+    %if it is a fe structure, get the wbFG out of it
+    if isfield(wbFG, 'fe')
+        wbFG = feGet(wbFG.fe, 'fibers acpc');
+    end
+else
+    if isfield(wbFG, 'fg')
+        wbFG = feGet(wbFG, 'fibers acpc');
+    end
+end
 
 if ischar(dt6)
     dt6 = dtiLoadDt6(dt6);
@@ -52,13 +62,23 @@ disp('Segmenting Major and Associative Tracts');
 
 % Segment the major white matter tracts in the Mori Atlas
 tic
-[classification] = wma_majortracts(dt6, wbFG);
+[classification] = wma_majortracts_v2(dt6, wbFG);
 segmentTime=toc;
 fprintf ('\n Mori Atlas segmentation run complete in %4.2f hours \n', segmentTime/(60*60))
 
+oldSlfIndexes=find(or(classification.index==15,classification.index==16));
+oldSlfIndexes=false;
+%reset 15 and 16 to MdLF ang to minimize need to move indexes and names
+%around.
+classification.names{15}='Left MdLF-Ang';
+classification.names{16}='Right MdLF-Ang';
+%blank out old ILF
+oldIlfIndexes=find(or(classification.index==13,classification.index==14));
+oldILFIndexes=false;
+
 % update name field
-newTractNames={'Left VOF','Right VOF','Left pArc','Right pArc','Left TPC','Right TPC','Left MdLF','Right MdLF', 'Left Meyer', 'Right Meyer', 'Left Baum', 'Right Baum' };
-for iNEWtracts=21:32
+newTractNames={'Left VOF','Right VOF','Left pArc','Right pArc','Left TPC','Right TPC','Left MdLF-SPL','Right MdLF-SPL', 'Left Meyer', 'Right Meyer', 'Left Baum', 'Right Baum', 'Left SLF1', 'Right SLF1', 'Left SLF2', 'Right SLF2', 'Left SLF3', 'Right SLF3' };
+for iNEWtracts=21:38
    classification.names{iNEWtracts}=newTractNames{iNEWtracts-20};
 end
 
@@ -77,18 +97,39 @@ classification.index(L_VOF_Indexes)=21;
 classification.index(R_VOF_Indexes)=22;
 
 % Middle Longitudinal Fasiculus segmentation
-[~, RightMdLFindexes, ...
- ~, LeftMdLFindexes] = bsc_segmentMdLF_neo(wbFG, fsDIR);
- 
-classification.index(LeftMdLFindexes)=27;
-classification.index(RightMdLFindexes)=28;
 
-[~, RightMeyerInd, ~,RightBaumInd, ~, LeftMeyerInd, ~,LeftBaumInd] =bsc_opticRadiationSeg_V2(wbFG, fsDIR);
+
+
+[~, RightILFIndexes, ~, LeftILFIndexes, ~, RightMdLFsplIndexes, ~, LeftMdLFsplIndexes,... 
+    ~, RightMdLFangIndexes, ~, LeftMdLFangIndexes] =bsc_segmentMdLF_ILF(wbFG, fsDIR);
+
+classification.index(LeftILFIndexes)=13;
+classification.index(RightILFIndexes)=14;
+classification.index(LeftMdLFangIndexes)=15;
+classification.index(RightMdLFangIndexes)=16;
+classification.index(LeftMdLFsplIndexes)=27;
+classification.index(RightMdLFsplIndexes)=28;
+
+
+
+%[~, RightMeyerBool, ~,RightBaumBool, ~, LeftMeyerBool, ~,LeftBaumBool] =bsc_opticRadiationSeg_V3(wbfg, fsDir)
+%functionally the same if outputs are indexes or bools, I believe
+[~, RightMeyerInd, ~,RightBaumInd, ~, LeftMeyerInd, ~,LeftBaumInd] =bsc_opticRadiationSeg_V3(wbFG, fsDIR);
 
 classification.index(LeftMeyerInd)=29;
 classification.index(RightMeyerInd)=30;
 classification.index(LeftBaumInd)=31;
 classification.index(RightBaumInd)=32;
+
+[~, LeftSlf1Bool, ~, RightSlf1Bool, ~, LeftSlf2Bool, ~, RightSlf2Bool,...
+    ~, LeftSlf3Bool, ~, RightSlf3Bool] =wma_subsegSLF(wbFG, fsDIR);
+
+classification.index(LeftSlf1Bool)=33;
+classification.index(RightSlf1Bool)=34;
+classification.index(LeftSlf2Bool)=35;
+classification.index(RightSlf2Bool)=36;
+classification.index(LeftSlf3Bool)=37;
+classification.index(RightSlf3Bool)=38;
 
 % for itracts=1:length(classification.names)
 %     spaceIndices=strfind(classification.names{itracts},' ');
