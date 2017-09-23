@@ -168,7 +168,7 @@ for leftright= [1,2]
     currentROIs= [{mergedParietalROI} {mergedTemporalROI} {Plane1} {Plane2} {Plane3} {Plane4} {mergedNOTROI}];
     
     %actually segment
-    [fascicle, FiberBoolVec] = wma_feSegmentFascicleFromConnectome(wbfg, currentROIs, operands, currentFascicleName);
+    [fascicle, FiberBoolVec] = wma_SegmentFascicleFromConnectome(wbfg, currentROIs, operands, currentFascicleName);
     
     %obtain fiber indexes corresponding to the pArc + TPC amalgum
     FiberIndexes=find(FiberBoolVec);
