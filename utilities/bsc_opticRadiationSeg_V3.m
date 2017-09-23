@@ -142,7 +142,7 @@ for leftright= [1,2]
     
     MeyerFascicle=fascicle;
     BaumFascicle=fascicle;
-    MeyerFascicle.fibers=fascicle.fibers(displacementVecBool&correctSideBool);
+    MeyerFascicle.fibers=fascicle.fibers(displacementVecBool'&correctSideBool);
     BaumFascicle.fibers=fascicle.fibers(~displacementVecBool&correctSideBool);
     % BONUS SECRET:  THERE'S A TRACT CONNECTING THE THALAMUS TO ROI
     % 11/12130 OR MAYBE THE ANTERIOR CALCERINE SLUCUS
