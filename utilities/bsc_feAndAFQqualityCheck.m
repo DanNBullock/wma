@@ -343,7 +343,11 @@ end
     for ilabels=1:length(tractNames)/2
         curName=tractNames{ilabels*2};
         spaceindexes=strfind(curName,' ');
+        if ~isempty(spaceindexes)
         labelNames{ilabels}=curName(spaceindexes(1)+1:end);
+        else
+            labelNames{ilabels}=curName;
+        end
     end
     
     subplot(3,3,[7,8,9])
