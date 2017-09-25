@@ -62,53 +62,45 @@ disp('Segmenting Major and Associative Tracts');
 
 % Segment the major white matter tracts in the Mori Atlas
 tic
-[classification] = wma_majortracts_v2(dt6, wbFG);
+[classificationOLD] = wma_majortracts_v2(dt6, wbFG);
 segmentTime=toc;
 fprintf ('\n Mori Atlas segmentation run complete in %4.2f hours \n', segmentTime/(60*60))
 
-oldSlfIndexes=find(or(classification.index==15,classification.index==16));
-oldSlfIndexes=false;
-%reset 15 and 16 to MdLF ang to minimize need to move indexes and names
-%around.
-classification.names{15}='Left MdLF-Ang';
-classification.names{16}='Right MdLF-Ang';
-%blank out old ILF
-oldIlfIndexes=find(or(classification.index==13,classification.index==14));
-oldILFIndexes=false;
+classification=classificationOLD;
 
 % update name field
-newTractNames={'Left VOF','Right VOF','Left pArc','Right pArc','Left TPC','Right TPC','Left MdLF-SPL','Right MdLF-SPL', 'Left Meyer', 'Right Meyer', 'Left Baum', 'Right Baum', 'Left SLF1', 'Right SLF1', 'Left SLF2', 'Right SLF2', 'Left SLF3', 'Right SLF3' };
-for iNEWtracts=21:38
-   classification.names{iNEWtracts}=newTractNames{iNEWtracts-20};
+newTractNames={'Left VOF','Right VOF','Left pArc','Right pArc','Left TPC','Right TPC','Left MdLF-SPL','Right MdLF-SPL', 'Left MdLF-Ang','Right MdLF-Ang','Left Meyer', 'Right Meyer', 'Left Baum', 'Right Baum', 'Left SLF1', 'Right SLF1', 'Left SLF2', 'Right SLF2', 'Left SLF3', 'Right SLF3', 'Left ILF', 'Right ILF' };
+for iNEWtracts=length(classification.names)+1:length(classification.names)+length(newTractNames)
+
+    
+   classification.names{iNEWtracts}=newTractNames{iNEWtracts-length(classificationOLD.names)};
 end
 
 % posterior arcuate and temporo-parietal connection segmentation
 [L_pArc, ~, L_pArc_Indexes,L_TPC_Indexes ,R_pArc, ~, R_pArc_Indexes,R_TPC_Indexes] = bsc_automated_roi_segment_script_neo(wbFG,fsDIR);
 
-classification.index(L_pArc_Indexes)=23;
-classification.index(R_pArc_Indexes)=24;
-classification.index(L_TPC_Indexes)=25;
-classification.index(R_TPC_Indexes)=26;
+classification.index(L_pArc_Indexes)=find( strcmp(classification.names,'Left pArc'));
+classification.index(R_pArc_Indexes)=find( strcmp(classification.names,'Right pArc'));
+classification.index(L_TPC_Indexes)=find( strcmp(classification.names,'Left TPC'));
+classification.index(R_TPC_Indexes)=find( strcmp(classification.names,'Right TPC'));
 
 % Segment the Vertical Occipital Fasiculus (VOF)
 [~, ~, L_VOF_Indexes, R_VOF_Indexes] =  wma_segment_vof(wbFG, fsDIR, classification, dt6); 
 
-classification.index(L_VOF_Indexes)=21;
-classification.index(R_VOF_Indexes)=22;
+classification.index(L_VOF_Indexes)=find( strcmp(classification.names,'Left VOF'));
+classification.index(R_VOF_Indexes)=find( strcmp(classification.names,'Right VOF'));
 
 % Middle Longitudinal Fasiculus segmentation
-
-
 
 [~, RightILFIndexes, ~, LeftILFIndexes, ~, RightMdLFsplIndexes, ~, LeftMdLFsplIndexes,... 
     ~, RightMdLFangIndexes, ~, LeftMdLFangIndexes] =bsc_segmentMdLF_ILF(wbFG, fsDIR);
 
-classification.index(LeftILFIndexes)=13;
-classification.index(RightILFIndexes)=14;
-classification.index(LeftMdLFangIndexes)=15;
-classification.index(RightMdLFangIndexes)=16;
-classification.index(LeftMdLFsplIndexes)=27;
-classification.index(RightMdLFsplIndexes)=28;
+classification.index(LeftILFIndexes)=find( strcmp(classification.names,'Left ILF'));
+classification.index(RightILFIndexes)=find( strcmp(classification.names,'Right ILF'));
+classification.index(LeftMdLFangIndexes)=find( strcmp(classification.names,'Left MdLF-Ang'));
+classification.index(RightMdLFangIndexes)=find( strcmp(classification.names,'Right MdLF-Ang'));
+classification.index(LeftMdLFsplIndexes)=find( strcmp(classification.names,'Left MdLF-SPL'));
+classification.index(RightMdLFsplIndexes)=find( strcmp(classification.names,'Right MdLF-SPL'));
 
 
 
@@ -116,25 +108,22 @@ classification.index(RightMdLFsplIndexes)=28;
 %functionally the same if outputs are indexes or bools, I believe
 [~, RightMeyerInd, ~,RightBaumInd, ~, LeftMeyerInd, ~,LeftBaumInd] =bsc_opticRadiationSeg_V3(wbFG, fsDIR);
 
-classification.index(LeftMeyerInd)=29;
-classification.index(RightMeyerInd)=30;
-classification.index(LeftBaumInd)=31;
-classification.index(RightBaumInd)=32;
+classification.index(LeftMeyerInd)=find( strcmp(classification.names,'Left Meyer'));
+classification.index(RightMeyerInd)=find( strcmp(classification.names,'Right Meyer'));
+classification.index(LeftBaumInd)=find( strcmp(classification.names,'Left Baum'));
+classification.index(RightBaumInd)=find( strcmp(classification.names,'Right Baum'));
 
 [~, LeftSlf1Bool, ~, RightSlf1Bool, ~, LeftSlf2Bool, ~, RightSlf2Bool,...
     ~, LeftSlf3Bool, ~, RightSlf3Bool] =wma_subsegSLF(wbFG, fsDIR);
 
-classification.index(LeftSlf1Bool)=33;
-classification.index(RightSlf1Bool)=34;
-classification.index(LeftSlf2Bool)=35;
-classification.index(RightSlf2Bool)=36;
-classification.index(LeftSlf3Bool)=37;
-classification.index(RightSlf3Bool)=38;
 
-% for itracts=1:length(classification.names)
-%     spaceIndices=strfind(classification.names{itracts},' ');
-%     classification.names{itracts}(spaceIndices)='_';
-% end
+classification.index(LeftSlf1Bool)=find( strcmp(classification.names,'Left SLF1'));
+classification.index(RightSlf1Bool)=find( strcmp(classification.names,'Right SLF1'));
+classification.index(LeftSlf2Bool)=find( strcmp(classification.names,'Left SLF2'));
+classification.index(RightSlf2Bool)=find( strcmp(classification.names,'Right SLF2'));
+classification.index(LeftSlf3Bool)=find( strcmp(classification.names,'Left SLF3'));
+classification.index(RightSlf3Bool)=find( strcmp(classification.names,'Right SLF3'));
+
 
 disp('\n Tracts segmentation complete');
 
