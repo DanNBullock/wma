@@ -22,6 +22,8 @@ function [LeftSlf1, LeftSlf1Bool, RightSlf1, RightSlf1Bool, LeftSlf2, LeftSlf2Bo
 
 
 %%  compute relevant stats for all tracts
+
+
 for iFibers=1:length(wbfg.fibers)
     fiberNodeNum=round(length(wbfg.fibers{iFibers})/2);
     curStreamline=wbfg.fibers{iFibers};
@@ -125,14 +127,15 @@ LeftSlf2=fascicle2;
 RightSlf2=fascicle2;
 LeftSlf2.fibers=wbfg.fibers(FiberBoolVec1 & slf2XCriterion & slf2YCriterion & slf2ZCriterion & slf2EndpointsCriterion & leftBool);
 RightSlf2.fibers=wbfg.fibers(FiberBoolVec1 & slf2XCriterion & slf2YCriterion & slf2ZCriterion & slf2EndpointsCriterion & ~leftBool);
-LeftSlf2Bool=FiberBoolVec1 & slf1XCriterion & slf1YCriterion & slf1ZCriterion & lengthBool'& leftBool;
-RightSlf2Bool=FiberBoolVec1 & slf1XCriterion & slf1YCriterion & slf1ZCriterion & lengthBool'& ~leftBool;
+LeftSlf2Bool=FiberBoolVec1 & slf2XCriterion & slf2YCriterion & slf2ZCriterion & lengthBool'& leftBool;
+RightSlf2Bool=FiberBoolVec1 & slf2XCriterion & slf2YCriterion & slf2ZCriterion & lengthBool'& ~leftBool;
 
 LeftSlf3=fascicle3;
 RightSlf3=fascicle3;
 LeftSlf3.fibers=wbfg.fibers(FiberBoolVec3 & slf3XCriterion & slf3YCriterion & slf3ZCriterion & slf3EndpointsCriterion & ~excludeBoolVec3 & leftBool);
 RightSlf3.fibers=wbfg.fibers(FiberBoolVec3 & slf3XCriterion & slf3YCriterion & slf3ZCriterion & slf3EndpointsCriterion & ~excludeBoolVec3 & ~leftBool);
-LeftSlf3Bool=FiberBoolVec3 & slf3XCriterion & slf3YCriterion & slf3ZCriterion & slf3EndpointsCriterion & ~excludeBoolVec3;
-RightSlf3Bool=FiberBoolVec3 & slf3XCriterion & slf3YCriterion & slf3ZCriterion & slf3EndpointsCriterion & ~excludeBoolVec3;
-end
+LeftSlf3Bool=FiberBoolVec3 & slf3XCriterion & slf3YCriterion & slf3ZCriterion & slf3EndpointsCriterion & ~excludeBoolVec3 & leftBool;
+RightSlf3Bool=FiberBoolVec3 & slf3XCriterion & slf3YCriterion & slf3ZCriterion & slf3EndpointsCriterion & ~excludeBoolVec3& ~leftBool;
 
+
+end
