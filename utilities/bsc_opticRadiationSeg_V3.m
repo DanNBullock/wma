@@ -27,6 +27,12 @@ thalamusLut=[10 49];
 choroidLut=[31 63];
 blankBool(1:length(wbfg.fibers))=false;
 
+RightMeyerBool=blankBool';
+RightBaumBool=blankBool';
+LeftMeyerBool=blankBool';
+LeftBaumBool=blankBool';
+
+
 %iterates through left and right sides
 for leftright= [1,2]
     
@@ -164,11 +170,7 @@ for leftright= [1,2]
     
       
     %directs segmentation output to correct function output holder
-    RightMeyerBool=blankBool';
-    RightBaumBool=blankBool';
-    LeftMeyerBool=blankBool';
-    LeftBaumBool=blankBool';
-    
+  
     
     if leftright == 2
         RightMeyerFiber=MeyerFascicle;
@@ -181,6 +183,8 @@ for leftright= [1,2]
         RightMeyerFiber.name='RMeyer';
 
     else
+        
+        
         LeftMeyerFiber=MeyerFascicle;
         LeftBaumFiber=BaumFascicle;
         
@@ -189,7 +193,7 @@ for leftright= [1,2]
    
         
         
-            LeftBaumFiber.name='LBaum';
+         LeftBaumFiber.name='LBaum';
          LeftMeyerFiber.name='LMeyer';
     end
     
@@ -197,4 +201,10 @@ for leftright= [1,2]
     clear fascicle
     clear correctSideBool
 end
+% figure 
+% bsc_quickPlot(LeftMeyerFiber)
+% bsc_quickPlot(LeftBaumFiber)
+% bsc_quickPlot()
+% bsc_quickPlot()
+% keyboard
 end
