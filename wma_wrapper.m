@@ -62,7 +62,7 @@ disp('Segmenting Major and Associative Tracts');
 
 % Segment the major white matter tracts in the Mori Atlas
 tic
-[classificationOLD] = wma_majortracts_v2(dt6, wbFG);
+[classificationOLD] = wma_majortracts_v4(dt6, wbFG);
 segmentTime=toc;
 fprintf ('\n Mori Atlas segmentation run complete in %4.2f hours \n', segmentTime/(60*60))
 
