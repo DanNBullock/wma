@@ -38,6 +38,22 @@ function [fg, keepFG] = wma_SegmentFascicleFromConnectome(fg, rois, operation, f
 % Franco (c) Stanford Vistasoft, 2013
 
 % Make sure that the inputs have one logical operation per ROI
+
+%% 9/19/2017 edit/Kludge: because endpoints doesnt work right
+% if wma_SegmentFascicleFromConnectome and dtiIntersectFibersWithRoi can be
+% fixed to work with 'endpoints' command appropriately, 
+% for ioperations= 1:length(operation)
+%     endpointscheck(ioperations)=strcmp(operation{ioperations},'endpoints');
+% end
+% 
+% if(sum(endpointscheck))~=0
+%     fgEndpoints=fg;
+%     for istreamlines=1:length(fgEndpoints.fibers)
+%         fgEndpoints.fibers(istreamlines)=fgEndpoints.fibers{istreamlines}(1,:)
+%     
+% end
+
+%% reamining code
 if ~(length(rois) == length(operation))
   error('[%s] Please provide one logical operand (e.g., ''and'', ''not'') for each ROI...',mfilename)
 end
@@ -60,13 +76,16 @@ currentFibIndices = cell(length(rois)+1,1);
 currentFibIndices{1} = 1:length(keepFG);
 
 for ir = 1:length(rois)
+    
   % Read the rois from disk if paths were passed in
   if ~isstruct(rois{ir})
     rois{ir} = dtiReadRoi(rois{ir});
   end
   
   % Intersect the wholebrain fiber group with "AND" / "NOT" ROIs
+
   [fg, ~, keep]  = dtiIntersectFibersWithRoi([],operation{ir},[],rois{ir},fg);
+
   
   % Select the indices fo the fibers that were deleted in the previous
   % loop. The way we address these indices depends on the type of operation.

@@ -36,9 +36,11 @@ if notDefined('smoothKernel'), smoothFlag = false;end
 if length( num2str(fsROInums(1))) < 5
     atlasNifti = wma_getAsegFile(fsDir , 'orig');
 else
-    atlasNifti = wma_getAsegFile(fsDir , '2009')
+
+     atlasNifti = wma_getAsegFile(fsDir , '2009');
 end
 
+%% iteratively use aparc atlas to make combined ROI
 
 % get size of atlasNifti.data and make a blank matrix mask for it
 atlasDataSize = size(atlasNifti.data);
