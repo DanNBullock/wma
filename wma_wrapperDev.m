@@ -1,4 +1,4 @@
-function [classification] = wma_wrapperDev(wbFG,dt6,fsDIR)
+function [classification] = wma_wrapperDev(wbFG,fsDIR)
 % 
 % [tracts_indexes]=wma_wrapper(wbFG,dt6path,FiberDir,saveHeader)
 %
@@ -33,23 +33,14 @@ function [classification] = wma_wrapperDev(wbFG,dt6,fsDIR)
 %% Path generation and initialization
 
 % loads file if a string was passed 
-if ischar(wbFG)
-    wbFG = load(wbFG);
-    %if it is a fe structure, get the wbFG out of it
-    if isfield(wbFG, 'fe')
-        wbFG = feGet(wbFG.fe, 'fibers acpc');
-    end
-else
-    if isfield(wbFG, 'fg')
-        wbFG = feGet(wbFG, 'fibers acpc');
-    end
-end
+[wbFG, fe] = bsc_LoadAndParseFiberStructure(wbFG);
 
-if ischar(dt6)
-    dt6 = dtiLoadDt6(dt6);
+if  isempty(test)
+    feFlag=false;
 else
-
+    feFlag=true;
 end
+    
 
 % Sets default saving behavior.  Defaults to saving.
 if notDefined('nosave'), nosave=false;end
@@ -135,6 +126,10 @@ classification.index(RightAslantIndexes)=find( strcmp(classification.names,'Righ
 
 
 [classification] = bsc_deleteClassifications(classificationFinal,[34 35 56 57 58 59 60 61 62 63 64 65 65 66]);
+
+if feFlag
+classification=wma_clearNonvalidClassifications(classification,fe);
+end
 
 classification=removeOutliersClassificationDev(classification,wbFG, 4, 10);
 
