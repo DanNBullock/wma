@@ -35,7 +35,7 @@ function [classification] = wma_wrapperDev(wbFG,fsDIR)
 % loads file if a string was passed 
 [wbFG, fe] = bsc_LoadAndParseFiberStructure(wbFG);
 
-if  isempty(test)
+if  isempty(fe)
     feFlag=false;
 else
     feFlag=true;
