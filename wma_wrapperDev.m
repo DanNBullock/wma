@@ -125,7 +125,7 @@ classification.index(RightAslantIndexes)=find( strcmp(classification.names,'Righ
 [classificationFinal] = bsc_mergeClassifications(classificationSemiFinal,classificationOptic);
 
 
-[classification] = bsc_deleteClassifications(classificationFinal,[34 35 56 57 58 59 60 61 62 63 64 65 65 66]);
+%[classification] = bsc_deleteClassifications(classificationFinal,[34 35 56 57 58 59 60 61 62 63 64 65 66]);
 
 if feFlag
 classification=wma_clearNonvalidClassifications(classification,fe);
