@@ -122,7 +122,7 @@ classification.index(RightAslantIndexes)=find( strcmp(classification.names,'Righ
 
 [classificationSemiFinal] = bsc_mergeClassifications(classification,classificationAdd);
 
-[classificationFinal] = bsc_mergeClassifications(classificationSemiFinal,classificationOptic);
+[classification] = bsc_mergeClassifications(classificationSemiFinal,classificationOptic);
 
 
 %[classification] = bsc_deleteClassifications(classificationFinal,[34 35 56 57 58 59 60 61 62 63 64 65 66]);
