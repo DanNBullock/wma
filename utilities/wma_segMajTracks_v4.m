@@ -324,9 +324,9 @@ for leftright= [1,2]
     insNOT=bsc_roiFromFSnums(fsDir,[  118]+sidenum,0);
     
     [arc, arcIND]=wma_SegmentFascicleFromConnectome(wbfg, [{uncPlane} {superiorCutPlane} {superiorCutPlane2} {amigRoi} {insNOT},{interHemisphere} {thalTotal}], {'and', 'and', 'and', 'not', 'not','not', 'not'}, 'arc');
-    arcEndpointCriteria= abs(endpoints1(:,1)) > abs(caudateCutLat) & abs(endpoints2(:,1)) < abs(caudateCutLat);
+    %arcEndpointCriteria= abs(endpoints1(:,1)) > abs(caudateCutLat) & abs(endpoints2(:,1)) < abs(caudateCutLat);
     %arc.fibers=wbfg.fibers(arcIND & arcEndpointCriteria & midpoints(:,2)<PosteriorCCcutoffA);
-    arcIND=arcIND & arcEndpointCriteria & midpoints(:,2)<PosteriorCCcutoffA;
+    %arcIND=arcIND & arcEndpointCriteria & midpoints(:,2)<PosteriorCCcutoffA;
    
     
     fprintf('\n Arcuate segmented');
