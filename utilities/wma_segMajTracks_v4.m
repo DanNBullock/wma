@@ -187,8 +187,8 @@ BodyCCIND=BodyCCIND & CCEndpointCriteria;
 %BodyCC.fibers=wbfg.fibers(BodyCCIND);
 
 classification.index(BodyCCIND)=find( strcmp(classification.names,'Corpus Callosum'));
-classification.index(AnteriorCCIND)=find( strcmp(classification.names,'Forceps Major'));
-classification.index(PosteriorCCIND)=find( strcmp(classification.names,'Forceps Minor'));
+classification.index(AnteriorCCIND)=find( strcmp(classification.names,'Forceps Minor'));
+classification.index(PosteriorCCIND)=find( strcmp(classification.names,'Forceps Major'));
 
 fprintf('\n Bihemispheric tracts segmented');
 
