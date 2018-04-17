@@ -40,9 +40,11 @@ end
 
 %% set nonvalidated classifications to 0
 validIndices=find(fe.life.fit.weights>0);
+fprintf('\n %i positively weighted fibers found in fe structure', length(validIndices));
 
 blankIndex=1:length(fe.life.fit.weights);
-invalidIndices=setdiff(validIndices,blankIndex);
-
+invalidIndices=setdiff(blankIndex,validIndices);
+fprintf ('\n %i pre-life streamlines classified \n', sum (~classification.index==0))
 classification.index(invalidIndices)=0;
+fprintf ('\n %i post-life streamlines classified \n', sum (~classification.index==0))
 end
