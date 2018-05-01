@@ -140,6 +140,7 @@ for leftright= [1,2]
     MdLFangFiberBoolVec=MdLFangFiberBoolVec' & midpoints(:,3)<insSupcutoff &  midpoints(:,2)>octpriCut & midpoints(:,2)<supmargCut;
     MDLF.fibers=wbfg.fibers(MdLFangFiberBoolVec);
     
+    if length(MDLF.fibers)>0
     for ifibers=1:length(MDLF.fibers)
         nodeInd=find(min(abs(MDLF.fibers{ifibers}(3,:)-topCoord))==abs(MDLF.fibers{ifibers}(3,:)-topCoord));
         keepbool(ifibers)=abs(MDLF.fibers{ifibers}(1,nodeInd(1)))>abs(averageDivider);
@@ -170,6 +171,10 @@ for leftright= [1,2]
 %     figure
 %     bsc_quickPlot(MDLFSPL)
 %     bsc_quickPlot(MDLFANG)
+
+    else
+        warning('MdLF tract empty. No streamlines found.')
+    end
 
 
 
