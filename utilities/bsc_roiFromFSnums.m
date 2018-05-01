@@ -44,10 +44,10 @@ if ~exist(niiPath)
     %I dont know why this is necessary
     quoteString=strcat('mri_convert',spaceChar, fsDir,'/mri/',mgzfile ,spaceChar, niiPath);
     quoteString=quoteString{:};
-    [status result] = system(quoteString);
+    [status result] = system(quoteString, '-echo');
     if status~=0
-        fprintf('/n Error generating aseg nifti file.  There may be a problem finding the file.')
-        keyboard
+        warning('/n Error generating aseg nifti file.  There may be a problem finding the file. Output: %s ',result)
+        
     end
 end
 
@@ -91,7 +91,7 @@ mergedROI = dtiNewRoi(['fs_', roiNameString], 'r');
 %cordinates
 mergedROI.coords = mrAnatXformCoords(atlasNifti.qto_xyz, [x1,y1,z1]);
 if length(mergedROI.coords)==0
-    keyboard
+    warning('Empty ROI returned for roi %s', roiNameString)
 else
 end
 end
