@@ -123,7 +123,7 @@ for leftright= [1,2]
     
 
     
-    if leftright==2
+    if leftright==1
         %named from cerebellar source
         LeftLenti2ceb=Lenti2cebtex;
         LeftLenti2cebIndexes=lentiOutIND & Lenti2cebtexIND' & bstemOutIND;
