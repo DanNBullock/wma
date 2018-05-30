@@ -1,4 +1,4 @@
-function tractStruc = bsc_makeFGsFromClassification(classification, wbFG)
+function tractStruc = bsc_makeFGsFromClassification(classification, wbFG,coordScheme)
 %
 %    tractStruc = bsc_makeFGsFromClassification(classification, wbFG)
 %
@@ -18,8 +18,15 @@ function tractStruc = bsc_makeFGsFromClassification(classification, wbFG)
 %   wbFG:  a structure containing the streamlines referenced in the
 %   classification structure.  Can be either a fe structure or a whole
 %   brain fiber group.  Will load paths.
+%
+%  coordScheme: the coordinate scheme you would like the output fibers in,
+%  default is acpc.  Other option is IMG
 % 
 % (C) Daniel Bullock, 2017, Indiana University
+
+if notDefined('coordScheme')
+    coordScheme='acpc';
+end
 
 % loads requisite structures from input
 [wbFG, fe] = bsc_LoadAndParseFiberStructure(wbFG);
@@ -35,11 +42,30 @@ if ~isempty(fe)
 classification=wma_clearNonvalidClassifications(classification,fe);
 end
 
+%find left and right tracts and assign them the same color. 
+classificationGrouping = wma_classificationStrucGrouping(classification);
+colorMapping = distinguishable_colors(length(classificationGrouping.names));
+
 % for each name in the classification.names structure finds the
 % corresponding streamlines associated with that classification and creates
 % an fg containg all relecant streamlines
+if strcmpi(coordScheme,'acpc')
 for itracts=1:length(classification.names)
+    colorIndex=unique(classificationGrouping.index(find(classification.index==itracts)));
+    tractStruc(itracts).fg.colorRgb=colorMapping(colorIndex,:);
     tractStruc(itracts).name=classification.names{itracts};
-    tractStruc(itracts).fibers=wbFG.fibers(classification.index==itracts);
+    tractStruc(itracts).fg = dtiNewFiberGroup(tractStruc(itracts).name);
+    tractStruc(itracts).fg.fibers=wbFG.fibers(classification.index==itracts);
+end
+elseif strcmpi(coordScheme,'img')
+ for itracts=1:length(classification.names)
+    colorIndex=unique(classificationGrouping.index(find(classification.index==itracts)));
+    tractStruc(itracts).fg.colorRgb=colorMapping(colorIndex,:);
+    tractStruc(itracts).name=classification.names{itracts};
+    tractStruc(itracts).fg = dtiNewFiberGroup(tractStruc(itracts).name);
+    tractStruc(itracts).fg.fibers=fe.fg.fibers(classification.index==itracts);
+end   
+else 
+    fprintf('coordScheme input not understood')
 end
 end
