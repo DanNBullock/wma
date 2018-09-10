@@ -2,7 +2,7 @@
 This matlab code segments out fiber tracts from a number of white matter structures including the Arcuate, MdLF, pArc, TPC, Cingulum, and many others. 
 
 ### Authors
-- Dan Bullock(dnbulloc@indiana.edu)
+- Dan Bullock(dnbulloc@iu.edu)
 
 ### Funding 
 
