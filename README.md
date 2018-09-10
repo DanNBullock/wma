@@ -1,4 +1,4 @@
-# app-example-documentation
+# Code Functionality
 This code segments out fiber tracts from a number of white matter structures including the Arcuate, MdLF, pArc, TPC, Cingulum, and many others. 
 
 ### Authors
