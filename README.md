@@ -23,7 +23,7 @@ Use the compiled and dockerized version of this application found at https://git
 
 ### Sample Datasets
 
-If you don't have your own input file, you can download sample datasets from Brainlife.io, or you can use [Brainlife CLI](https://github.com/brain-life/cli).
+If you don't have your own input files, you can download sample datasets from Brainlife.io, or you can use [Brainlife CLI](https://github.com/brain-life/cli).
 
 ## Input
 -wbFG: either a path to a saved whole brain fiber group / tractogram (fg, fe, or tck; trk soon) or the object itself. 
@@ -33,7 +33,8 @@ If you don't have your own input file, you can download sample datasets from Bra
 ## Output
 
 -classification:  A structure whose "names" field correspond to the names of the various fiber tracts that were segmented in this function.
-                  The index field contains a vector (with as many values as the source whole brain tractogram) that features a number for those streamline indexes which were identified as being part of a segmented tract.  The numeral corresponds to the index of the corresponding name in list of names under the "names" field.
+                  The index field contains a vector (with as many values as the source whole brain tractogram) that features a number for those streamline indexes which were identified as being part of a segmented tract.  
+                  The numeral corresponds to the index of the corresponding name in list of names under the "names" field.
 
 ### Dependencies
 
