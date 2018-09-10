@@ -19,7 +19,7 @@ Use the compiled and dockerized version of this application found at https://git
 
 1.  git clone this repo.
 2.  Ensure that you have the requisite dependancies installed (VISTASOFT, MBA, & Freesurfer)
-3.  In matlab, pass your whole brain tractogram (path or object, currently known oto work with tck and fg, trk operability soon) along with the path to the corresponding subject's freesurfer directory (i.e. contains /labels, /surf, /mri, etc) into wma_wrapperDev(wbFG,fsDIR).
+3.  In matlab, pass your whole brain tractogram (path or object, currently known to work with .tck and .fg, trk functionality coming soon) along with the path to the corresponding subject's freesurfer directory (i.e. contains /labels, /surf, /mri, etc) into wma_wrapperDev(wbFG,fsDIR).
 
 ### Sample Datasets
 
