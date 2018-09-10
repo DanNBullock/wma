@@ -32,9 +32,7 @@ If you don't have your own input files, you can download sample datasets from Br
 
 ## Output
 
--classification:  A structure whose "names" field correspond to the names of the various fiber tracts that were segmented in this function.
-                  The index field contains a vector (with as many values as the source whole brain tractogram) that features a number for those streamline indexes which were identified as being part of a segmented tract.  
-                  The numeral corresponds to the index of the corresponding name in list of names under the "names" field.
+-classification:  A structure whose *names* field correspond to the names of the various fiber tracts that were segmented in this function.  The *index* field contains a vector (with as many values as the source whole brain tractogram) that features a number for those streamline indexes which were identified as being part of a segmented tract.  The numeral corresponds to the index of the corresponding name in list of names under the *names* field.
 
 ### Dependencies
 
